@@ -1,0 +1,114 @@
+# On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction
+
+> SPOT predicts where a diffusion language model commits next. A 0.62M-parameter drafter learns that commit order, and the model verifies a whole tree of drafts in one pass, keeping its exact output distribution.
+
+By Eliezer Shlomi (Technion – Israel Institute of Technology, INSIGHT Lab, School of Electrical and Computer Engineering, Ben-Gurion University of the Negev), Eliron Rahimi (Technion – Israel Institute of Technology, INSIGHT Lab, School of Electrical and Computer Engineering, Ben-Gurion University of the Negev), Avi Mendelson (Technion – Israel Institute of Technology), Chaim Baskin (INSIGHT Lab, School of Electrical and Computer Engineering, Ben-Gurion University of the Negev), 2026.
+
+## What is this paper about?
+
+SPOT is a speculative decoding method for diffusion language models: a 0.62M-parameter drafter predicts the order in which the target commits masked positions, and the target verifies a tree of drafted block states in one batched forward, exactly at any temperature.
+
+## Important context
+
+- A diffusion language model must choose both what to write and where; exact decoding fills in only one masked position per model pass, and faster multi-token schemes are lossy.
+- The drafter reads only the target's stale output distributions: the stale argmax already matches the true token in 92% of first-block commits and ≥ 90% thereafter, so what the drafter predicts is the commit order.
+- Coupled-noise match shares Gumbel noise between the drafter and the target, so a whole tree is verified by state equality at T > 0 and the target's distribution is preserved.
+- Stale conditionals: The most recently available target conditionals at the masked positions of a block. They are stale because hypothetical future commitments change the true target distribution; drafting reuses them at zero additional target forwards (Section 4.2).
+- Commit order: The sequence of positions the target commits next, one per forward under exact decoding. The drafter predicts it as qφ(s | y), a distribution over the target's next committed position given a hypothetical state y (Section 4.2).
+- Draft tree: Candidate block states grown by recursively querying the prefix-conditional predictor, high-probability branches first, up to a budget of D drafted states that the target verifies in one batched forward (Section 4.2).
+- Coupled-noise match: Verification at T > 0 in which the drafter applies the same Gumbel noise as the target, so that, conditioned on the noise, the target transition is deterministic and verification reduces to state equality (Section 4.3).
+- SPOT (Speculating Positions Order Trajectory): The method: a 0.62M-parameter, three-layer order model predicts the next committed position, the predictions grow a draft tree, and the model verifies the tree exactly (Section 4).
+- SPOT-γ: SPOT run unpadded with a prefix-mass floor γ that discards candidates below it, so that the realized verification budget adapts to drafter confidence; γ = 0.1 on SDAR-8B (Section 4.2, Appendix D.5).
+- NFE and throughput ratio: NFE is the number of target forward passes per sample; the throughput ratio is measured against the draft-free run of the same task, model and temperature (Section 5.1).
+
+## Data and methods
+
+SDAR-8B at block width 32, SDAR-4B, SDAR-1.7B and LLaDA2.0-mini, with transfer to LLaDA-8B and Dream-7B, on GSM8K, MBPP, HumanEval and MATH500 (n = 350, all 164 for HumanEval, three seeds, generation length 256), against Spiffy's calibrated draft graph, an SSD-style free chain and a BlockSpec-style confidence tree under one decoder and verifier.
+
+## Key results
+
+- On SDAR-8B, 3.2–4.7× fewer target forwards than draft-free decoding at budget 8 and 4.1–6.8× at budget 20, at 2.0–2.7× the throughput at budget 8.
+- 15–35% fewer target forwards than Spiffy's calibrated graph at 1.1–1.5× its throughput in every task and budget; at T = 1, 15–34% fewer at 1.15–1.48× its throughput.
+- At generation length 512, SPOT-γ reaches 3.23× draft-free throughput on MBPP at T = 1.
+- The LLaDA2.0-mini checkpoint, pointed at SDAR-8B, costs 3–7% more forwards and still beats every baseline calibrated there.
+
+## Limitations and scope
+
+- The gains diminish when verification is costly or acceptance is low: verification becomes the bottleneck at wide blocks, and exact tree packing remains unresolved under bidirectional attention.
+- Gains narrow on low-acceptance tasks; on SDAR-1.7B, Spiffy has the higher throughput in three columns at T = 0 and two at T = 1, with one tie.
+- At T ≥ 2 the order model trained at T = 0 is outperformed by noise-aware ranking.
+- LLaDA-8B and Dream-7B run with an approximate prefix cache, so those results measure reach; losslessness is shown on the exact-cache targets.
+
+## Navigation guide
+
+- Section 3: why commit order is the drafting bottleneck.
+- Section 4: the drafter and coupled-noise verification; Appendix A: the exactness proofs.
+- Section 5: main results, temperature, transfer and ablations; Appendix F: extended results.
+
+## Publication status
+
+Preprint.
+
+## Questions and answers
+
+### What problem does SPOT solve?
+
+SPOT accelerates diffusion language models losslessly. Exact decoding fills in one masked position per model pass, and faster multi-token schemes are approximate. Speculative decoding is the standard lossless acceleration for autoregressive models (Leviathan et al., 2023; Chen et al., 2023), but a DLM must choose both what to generate and where. SPOT drafts several future commitments with a small learned model, and the target verifies all of them in a single pass (Section 1).
+
+### Why is commit order the bottleneck?
+
+The tokens are largely known in advance, so the order decides. The stale argmax matches the true token in 92% of first-block commits and ≥ 90% thereafter, while the probability that the previous round's top-confidence position commits next drops to 3% by the ninth block. Live oracles show that true positions are worth more than true tokens on every task (Section 3.1, Figure 2).
+
+### How does SPOT draft and verify?
+
+SPOT reads the target's stale top-32 probabilities at each masked position, predicts the next committed position, and repeats the prediction after each hypothetical commitment to grow a tree of block states. The target evaluates the current and drafted states in one batched forward and accepts the longest prefix consistent with its own trajectory. The drafter is trained entirely from draft-free target trajectories and reads only the target's output distributions (Section 4).
+
+### Is the output exact when the target samples?
+
+Yes, with an exact prefix cache. At T = 0, state-equality verification reproduces the draft-free target trajectory for any drafter (Proposition 1). At T > 0, the drafter and the target share per-position Gumbel noise, following the coupling of Daliri et al. (2025); conditioned on the noise, the target transition is deterministic, and the drafted output has the same distribution as draft-free decoding (Proposition 2). Draft quality therefore affects speed alone, and correctness is guaranteed (Section 4.3).
+
+### How does SPOT differ from Spiffy, SSD and BlockSpec?
+
+Spiffy calibrates a static draft graph offline (Agrawal et al., 2026), SSD orders positions by confidence into a self-drafted chain (Gao et al., 2025), and a BlockSpec-style tree ranks positions by the target's stale confidences (Pan et al., 2025); SPOT learns the commit order. Under one decoder and verifier, SPOT uses 15–35% fewer target forwards than Spiffy's calibrated graph at 1.1–1.5× its throughput on SDAR-8B, in every task and budget (Section 5.2).
+
+### Which models and benchmarks does the paper use?
+
+The headline target is SDAR-8B (Cheng et al., 2026), a dense block-causal DLM at block width 32. Drafters are also trained for SDAR-4B, SDAR-1.7B and the mixture-of-experts LLaDA2.0-mini (Bie et al., 2025), and transfer is measured on LLaDA-8B (Nie et al., 2025) and Dream-7B (Ye et al., 2025). The benchmarks are GSM8K (Cobbe et al., 2021), MBPP (Austin et al., 2021b), HumanEval (Chen et al., 2021) and MATH500 (Hendrycks et al., 2021), with n = 350 samples (all 164 for HumanEval) over three seeds at generation length 256 (Section 5.1).
+
+### What are the main results?
+
+On SDAR-8B, SPOT needs 3.2–4.7× fewer target forwards than draft-free decoding at budget 8 and 4.1–6.8× at budget 20, at 2.0–2.7× the throughput at budget 8. At T = 1 it keeps 15–34% fewer forwards than Spiffy at 1.15–1.48× its throughput. At generation length 512, SPOT-γ reaches 3.23× draft-free throughput on MBPP at T = 1. On SDAR-1.7B, where a target forward is cheap, Spiffy wins three throughput columns at T = 0 and two at T = 1, with one tie (Sections 5.2, 5.3 and 5.4).
+
+### Does SPOT work beyond SDAR-8B?
+
+Yes, across six DLMs. The same recipe gives the lowest NFE and highest throughput in every comparison on SDAR-4B; on LLaDA2.0-mini, which has a different tokenizer, it gives the lowest NFE in all 36 comparisons and the higher throughput in 34. The LLaDA2.0-mini checkpoint, pointed at SDAR-8B, costs 3–7% more forwards and still beats every baseline calibrated there. On LLaDA-8B and Dream-7B, new to every checkpoint, SPOT cuts 256 forwards to 55–88 and 51–79, measured with an approximate prefix cache (Section 5.4).
+
+### What are the limitations?
+
+The gains diminish when verification is costly or acceptance is low. Verification becomes the bottleneck at wide blocks, and exact tree packing remains unresolved under bidirectional attention. Gains also narrow on low-acceptance tasks, and at T ≥ 2 the order model trained at T = 0 is outperformed by noise-aware ranking (Section 6).
+
+### Where are the code and the drafters?
+
+The code, the trained drafters and the instructions to reproduce the experiments are at https://github.com/Eliezer318/SPOT-dLLM under the MIT license, and the drafters are mirrored on Hugging Face at https://huggingface.co/EliezerS/SPOT-dLLM (Appendix G).
+
+## Links
+
+- [Project page](https://eliezer318.github.io/SPOT-dLLM/): overview, results and citation
+- [Code](https://github.com/Eliezer318/SPOT-dLLM): The decoder, the coupled-noise verifier, drafter training and the trained drafters; MIT licence.
+- [Drafters](https://huggingface.co/EliezerS/SPOT-dLLM): The trained 0.62M-parameter commit-order drafters, one per target and block width.
+- [Colab](https://colab.research.google.com/github/Eliezer318/SPOT-dLLM/blob/main/colab/spot_quickstart.ipynb): SDAR-1.7B with its drafter on a free Colab GPU: draft-free decoding against SPOT and SPOT-γ.
+
+## TL;DR
+
+SPOT speeds up diffusion language models losslessly. A 0.62M-parameter drafter predicts the order in which the model commits positions, and the model verifies a whole tree of drafts in one pass, exactly at any temperature. It cuts target passes by up to 6.8×, reaches up to 3.2× the throughput of standard decoding, and its drafters transfer across six diffusion LMs.
+
+## Citation
+
+```bibtex
+@article{shlomi2026spot,
+  title   = {On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction},
+  author  = {Shlomi, Eliezer and Rahimi, Eliron and Mendelson, Avi and Baskin, Chaim},
+  journal = {arXiv preprint},
+  year    = {2026}
+}
+```

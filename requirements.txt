@@ -1,0 +1,32 @@
+# Dependency manifest.
+#
+# Install (CUDA 12.4 example):
+#   pip install torch --index-url https://download.pytorch.org/whl/cu124
+#   pip install -r requirements.txt
+#
+# torch is intentionally not pinned here: the wheel is CUDA-build specific and must come
+# from the PyTorch index matching your driver. Validated with torch 2.6.0+cu124 on
+# Python 3.13.
+
+# transformers: PIN TO 4.x. This is a correctness pin, not a preference. Unpinned installs
+# resolve to 5.x, which loads and then fails at model init, because LLaDA2.0-mini ships its
+# own modeling code via trust_remote_code written against the 4.x rope registry:
+#     modeling_llada2_moe.py:108  ROPE_INIT_FUNCTIONS[self.rope_type]  ->  KeyError: 'default'
+# The breakage is not caught by importing transformers, so an import-only smoke test passes
+# on a version that cannot run a single decode.
+transformers==4.55.4
+tokenizers==0.21.4
+huggingface_hub==0.36.2
+
+accelerate==1.14.0
+datasets==5.0.1
+safetensors==0.8.0
+sentencepiece==0.2.2
+
+# pandas and pyarrow are hard requirements, not analysis extras: the task loaders read every
+# benchmark off parquet in the Hugging Face snapshot cache.
+pandas==3.0.5
+pyarrow==25.0.1
+
+numpy==2.5.2
+scipy==1.18.0

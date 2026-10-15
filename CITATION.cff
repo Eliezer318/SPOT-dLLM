@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "If you use this code or the drafter checkpoints, please cite the paper."
+title: "On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction"
+type: software
+license: MIT
+repository-code: "https://github.com/Eliezer318/SPOT-dLLM"
+authors:
+  - given-names: Eliezer
+    family-names: Shlomi
+    affiliation: "Technion - Israel Institute of Technology; INSIGHT Lab, School of Electrical and Computer Engineering, Ben-Gurion University of the Negev"
+    orcid: "https://orcid.org/0009-0004-6587-9594"
+  - given-names: Eliron
+    family-names: Rahimi
+    affiliation: "Technion - Israel Institute of Technology; INSIGHT Lab, School of Electrical and Computer Engineering, Ben-Gurion University of the Negev"
+  - given-names: Avi
+    family-names: Mendelson
+    affiliation: "Technion - Israel Institute of Technology"
+  - given-names: Chaim
+    family-names: Baskin
+    affiliation: "INSIGHT Lab, School of Electrical and Computer Engineering, Ben-Gurion University of the Negev"
+keywords:
+  - diffusion language models
+  - speculative decoding
+  - masked diffusion
+  - lossless acceleration
+preferred-citation:
+  type: generic
+  title: "On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction"
+  authors:
+    - given-names: Eliezer
+      family-names: Shlomi
+    - given-names: Eliron
+      family-names: Rahimi
+    - given-names: Avi
+      family-names: Mendelson
+    - given-names: Chaim
+      family-names: Baskin
+  year: 2026

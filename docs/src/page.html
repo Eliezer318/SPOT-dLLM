@@ -1,0 +1,1048 @@
+<title>On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction</title>
+<!-- PEO (paper-engine-optimization): search, Scholar, social and schema.org tags from peo/paper.toml -->
+<meta name="description" content="Speculative decoding for diffusion language models: a 0.62M-parameter drafter predicts the commit order, verified exactly at any temperature.">
+<meta name="author" content="Eliezer Shlomi, Eliron Rahimi, Avi Mendelson, Chaim Baskin">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<link rel="canonical" href="https://eliezer318.github.io/SPOT-dLLM/">
+<link rel="alternate" type="text/plain" href="llms.txt" title="llms.txt">
+<meta name="keywords" content="speculative decoding, diffusion language models, block diffusion, commit order, drafter, lossless acceleration, SDAR, LLaDA, Dream">
+<!-- Google Scholar (Highwire Press) -->
+<meta name="citation_title" content="On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction">
+<meta name="citation_author" content="Shlomi, Eliezer">
+<meta name="citation_author_institution" content="Technion – Israel Institute of Technology">
+<meta name="citation_author_institution" content="INSIGHT Lab, School of Electrical and Computer Engineering, Ben-Gurion University of the Negev">
+<meta name="citation_author" content="Rahimi, Eliron">
+<meta name="citation_author_institution" content="Technion – Israel Institute of Technology">
+<meta name="citation_author_institution" content="INSIGHT Lab, School of Electrical and Computer Engineering, Ben-Gurion University of the Negev">
+<meta name="citation_author" content="Mendelson, Avi">
+<meta name="citation_author_institution" content="Technion – Israel Institute of Technology">
+<meta name="citation_author" content="Baskin, Chaim">
+<meta name="citation_author_institution" content="INSIGHT Lab, School of Electrical and Computer Engineering, Ben-Gurion University of the Negev">
+<meta name="citation_publication_date" content="2026">
+<meta name="citation_language" content="en">
+<meta name="citation_keywords" content="speculative decoding; diffusion language models; block diffusion; commit order; drafter; lossless acceleration; SDAR; LLaDA; Dream">
+<!-- Open Graph and Twitter cards -->
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SPOT">
+<meta property="og:title" content="On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction">
+<meta property="og:description" content="SPOT predicts where a diffusion language model commits next. A 0.62M-parameter drafter learns that commit order, and the model verifies a whole tree of drafts in one pass, keeping its exact output distribution.">
+<meta property="og:url" content="https://eliezer318.github.io/SPOT-dLLM/">
+<meta property="og:image" content="https://eliezer318.github.io/SPOT-dLLM/assets/social.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta property="og:image:alt" content="The paper&#x27;s title, its four authors with their affiliations, and Figure 1: the target commits one position per forward, while SPOT drafts a tree of block states and verifies it in one forward.">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction">
+<meta name="twitter:description" content="SPOT predicts where a diffusion language model commits next. A 0.62M-parameter drafter learns that commit order, and the model verifies a whole tree of drafts in one pass, keeping its exact output distribution.">
+<meta name="twitter:image" content="https://eliezer318.github.io/SPOT-dLLM/assets/social.png">
+<meta name="twitter:image:alt" content="The paper&#x27;s title, its four authors with their affiliations, and Figure 1: the target commits one position per forward, while SPOT drafts a tree of block states and verifies it in one forward.">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "ScholarlyArticle",
+   "@id": "https://eliezer318.github.io/SPOT-dLLM/#paper",
+   "headline": "On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction",
+   "name": "On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction",
+   "description": "SPOT predicts where a diffusion language model commits next. A 0.62M-parameter drafter learns that commit order, and the model verifies a whole tree of drafts in one pass, keeping its exact output distribution.",
+   "keywords": [
+    "speculative decoding",
+    "diffusion language models",
+    "block diffusion",
+    "commit order",
+    "drafter",
+    "lossless acceleration",
+    "SDAR",
+    "LLaDA",
+    "Dream"
+   ],
+   "author": [
+    {
+     "@type": "Person",
+     "name": "Eliezer Shlomi",
+     "givenName": "Eliezer",
+     "familyName": "Shlomi",
+     "affiliation": [
+      {
+       "@type": "Organization",
+       "name": "Technion – Israel Institute of Technology"
+      },
+      {
+       "@type": "Organization",
+       "name": "INSIGHT Lab, School of Electrical and Computer Engineering, Ben-Gurion University of the Negev"
+      }
+     ],
+     "url": "https://orcid.org/0009-0004-6587-9594",
+     "sameAs": [
+      "https://github.com/Eliezer318"
+     ]
+    },
+    {
+     "@type": "Person",
+     "name": "Eliron Rahimi",
+     "givenName": "Eliron",
+     "familyName": "Rahimi",
+     "affiliation": [
+      {
+       "@type": "Organization",
+       "name": "Technion – Israel Institute of Technology"
+      },
+      {
+       "@type": "Organization",
+       "name": "INSIGHT Lab, School of Electrical and Computer Engineering, Ben-Gurion University of the Negev"
+      }
+     ],
+     "url": "https://scholar.google.co.il/citations?user=7OSo8DkAAAAJ"
+    },
+    {
+     "@type": "Person",
+     "name": "Avi Mendelson",
+     "givenName": "Avi",
+     "familyName": "Mendelson",
+     "affiliation": [
+      {
+       "@type": "Organization",
+       "name": "Technion – Israel Institute of Technology"
+      }
+     ],
+     "url": "https://www.cs.technion.ac.il/~mendlson/"
+    },
+    {
+     "@type": "Person",
+     "name": "Chaim Baskin",
+     "givenName": "Chaim",
+     "familyName": "Baskin",
+     "affiliation": [
+      {
+       "@type": "Organization",
+       "name": "INSIGHT Lab, School of Electrical and Computer Engineering, Ben-Gurion University of the Negev"
+      }
+     ],
+     "url": "https://chaimbaskin.bgu.ac.il/"
+    }
+   ],
+   "inLanguage": "en",
+   "isAccessibleForFree": true,
+   "url": "https://eliezer318.github.io/SPOT-dLLM/",
+   "mainEntityOfPage": "https://eliezer318.github.io/SPOT-dLLM/",
+   "image": "https://eliezer318.github.io/SPOT-dLLM/assets/social.png",
+   "about": [
+    {
+     "@type": "DefinedTerm",
+     "name": "Stale conditionals",
+     "description": "The model's latest predictions at a block's masked positions, reused for drafting with zero extra forward passes (Section 4.2)."
+    },
+    {
+     "@type": "DefinedTerm",
+     "name": "Commit order",
+     "description": "The sequence of positions the model commits, one per forward under exact decoding; the drafter predicts it as qφ(s | y) (Section 4.2)."
+    },
+    {
+     "@type": "DefinedTerm",
+     "name": "Draft tree",
+     "description": "Candidate block states grown best first from the drafter, up to a budget of D states verified in one batched forward (Section 4.2)."
+    },
+    {
+     "@type": "DefinedTerm",
+     "name": "Coupled-noise match",
+     "description": "Verification at T \u003e 0 with the drafter and the model sharing Gumbel noise, so checking reduces to state equality (Section 4.3)."
+    },
+    {
+     "@type": "DefinedTerm",
+     "name": "SPOT (Speculating Positions Order Trajectory)",
+     "description": "The method: a 0.62M-parameter, three-layer order model predicts the next committed position, the predictions grow a draft tree, and the model verifies the tree exactly (Section 4)."
+    },
+    {
+     "@type": "DefinedTerm",
+     "name": "SPOT-γ",
+     "description": "SPOT unpadded with a prefix-mass floor γ, so the verification budget adapts to drafter confidence; γ = 0.1 on SDAR-8B (Section 4.2, Appendix D.5)."
+    },
+    {
+     "@type": "DefinedTerm",
+     "name": "NFE and throughput ratio",
+     "description": "Target forward passes per sample, and throughput relative to the draft-free run of the same task, model and temperature (Section 5.1)."
+    }
+   ]
+  },
+  {
+   "@type": "SoftwareSourceCode",
+   "codeRepository": "https://github.com/Eliezer318/SPOT-dLLM",
+   "@id": "https://github.com/Eliezer318/SPOT-dLLM",
+   "name": "Code",
+   "url": "https://github.com/Eliezer318/SPOT-dLLM",
+   "subjectOf": {
+    "@id": "https://eliezer318.github.io/SPOT-dLLM/#paper"
+   }
+  },
+  {
+   "@type": "CreativeWork",
+   "description": "The trained 0.62M-parameter commit-order drafters, one per target and block width.",
+   "@id": "https://huggingface.co/EliezerS/SPOT-dLLM",
+   "name": "Drafters",
+   "url": "https://huggingface.co/EliezerS/SPOT-dLLM",
+   "subjectOf": {
+    "@id": "https://eliezer318.github.io/SPOT-dLLM/#paper"
+   }
+  }
+ ]
+}
+</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231d4ed8'/%3E%3Crect x='6' y='6' width='8' height='8' rx='1.5' fill='%23ffffff'/%3E%3Crect x='18' y='6' width='8' height='8' rx='1.5' fill='%2393b4ff'/%3E%3Crect x='6' y='18' width='8' height='8' rx='1.5' fill='%2393b4ff'/%3E%3Crect x='18' y='18' width='8' height='8' rx='1.5' fill='%2393b4ff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg: #ffffff;
+  --ink: #111827;
+  --text: #1f2937;
+  --body: #374151;
+  --muted: #4b5563;
+  --faint: #6b7280;
+  --line: rgba(17, 24, 39, 0.12);
+  --line-soft: rgba(17, 24, 39, 0.06);
+  --panel: #f4f5f7;
+  --card: #ffffff;
+  --callout: #f8fafc;
+  --nav-bg: rgba(255, 255, 255, 0.94);
+  --accent: #1d4ed8;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(29, 78, 216, 0.08);
+  --accent-line: rgba(29, 78, 216, 0.35);
+  --dark: #111827;
+  --dark-ink: #f9fafb;
+  --chip-ink: #ffffff;
+  --free: #7c8592;
+  --spiffy: #4b5563;
+  --chain: #9ca3af;
+  --blockspec: #d1d5db;
+  --spot: #6b93ec;
+  --spotg: #1d4ed8;
+  --mask: #e5e7eb;
+  --mask-strong: #d1d5db;
+  --flash: #fbbf24;
+  --font-display: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --page-w: 1200px;
+  --gutter: clamp(16px, 4vw, 40px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0b0f17; --ink: #f3f4f6; --text: #e5e7eb; --body: #cbd5e1; --muted: #a3acb9; --faint: #8b95a3;
+    --line: rgba(255, 255, 255, 0.12); --line-soft: rgba(255, 255, 255, 0.07);
+    --panel: #121824; --card: #19202d; --callout: #111a28; --nav-bg: rgba(11, 15, 23, 0.9);
+    --accent: #7aa2ff; --accent-ink: #0b0f17; --accent-soft: rgba(122, 162, 255, 0.12); --accent-line: rgba(122, 162, 255, 0.45);
+    --dark: #e5e7eb; --dark-ink: #0b0f17; --chip-ink: #0b0f17;
+    --free: #6f7886; --spiffy: #9aa3b0; --chain: #5f6876; --blockspec: #3b4556; --spot: #5b80e6; --spotg: #8fb0ff;
+    --mask: #232c3b; --mask-strong: #313b4d; --flash: #d9a520;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b0f17; --ink: #f3f4f6; --text: #e5e7eb; --body: #cbd5e1; --muted: #a3acb9; --faint: #8b95a3;
+  --line: rgba(255, 255, 255, 0.12); --line-soft: rgba(255, 255, 255, 0.07);
+  --panel: #121824; --card: #19202d; --callout: #111a28; --nav-bg: rgba(11, 15, 23, 0.9);
+  --accent: #7aa2ff; --accent-ink: #0b0f17; --accent-soft: rgba(122, 162, 255, 0.12); --accent-line: rgba(122, 162, 255, 0.45);
+  --dark: #e5e7eb; --dark-ink: #0b0f17; --chip-ink: #0b0f17;
+  --free: #6f7886; --spiffy: #9aa3b0; --chain: #5f6876; --blockspec: #3b4556; --spot: #5b80e6; --spotg: #8fb0ff;
+  --mask: #232c3b; --mask-strong: #313b4d; --flash: #d9a520;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 var(--font-body); -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+img { max-width: 100%; }
+p, h1, h2, h3, h4, figure { margin: 0; }
+.eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.tag { display: inline-flex; align-items: center; padding: 6px 12px; border: 1px solid var(--line); border-radius: 4px; background: var(--card); font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text); }
+.tag.is-outline { background: transparent; border-color: var(--faint); }
+.ico { width: 16px; height: 16px; flex: none; }
+
+/* nav */
+.site-nav { position: sticky; top: 0; z-index: 20; height: 64px; background: var(--nav-bg); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.nav-inner { max-width: var(--page-w); height: 100%; margin: 0 auto; padding: 0 var(--gutter); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.wordmark { font-family: var(--font-display); font-size: 19px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); text-decoration: none; white-space: nowrap; }
+.nav-links { display: flex; align-items: center; gap: 28px; }
+.nav-links a.nl { color: var(--muted); text-decoration: none; font-size: 15px; }
+.nav-links a.nl:hover { color: var(--accent); }
+.nav-cta { font-size: 12px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent-line); border-radius: 6px; padding: 10px 16px; text-decoration: none; white-space: nowrap; }
+.nav-cta[aria-disabled="true"] { cursor: default; }
+.nav-cta .soon { color: var(--faint); letter-spacing: 0.08em; }
+@media (max-width: 960px) { .nav-links a.nl { display: none; } }
+
+/* header */
+.article-header { max-width: var(--page-w); margin: 0 auto; padding: 56px var(--gutter) 40px; display: grid; justify-items: center; text-align: center; gap: 24px; }
+.meta { color: var(--faint); font-size: 15px; letter-spacing: 0.01em; }
+.title { font-family: var(--font-display); font-weight: 600; font-size: clamp(31px, 3.6vw, 50px); line-height: 1.15; letter-spacing: -0.02em; color: var(--ink); max-width: 940px; text-wrap: balance; }
+.dek { font-family: var(--font-display); font-weight: 500; font-size: clamp(18px, 1.6vw, 21px); line-height: 1.45; color: var(--ink); max-width: 800px; text-wrap: pretty; }
+.value-points { list-style: none; margin: 0; padding: 0; max-width: 780px; display: grid; gap: 14px; text-align: left; }
+.value-points li { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 16px; color: var(--body); font-size: 17px; line-height: 1.6; }
+.vp-label { font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); padding-top: 5px; }
+@media (max-width: 560px) { .value-points li { grid-template-columns: minmax(0, 1fr); gap: 2px; font-size: 16px; } }
+.authors { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 8px 26px; font-size: 18px; }
+.author { white-space: nowrap; }
+.author a { color: var(--text); text-decoration: none; border-bottom: 1px solid var(--accent-line); padding-bottom: 1px; }
+.author a:hover { color: var(--accent); }
+.author sup { font-size: 11px; color: var(--faint); margin-left: 3px; }
+.affils { display: grid; gap: 4px; font-size: 14.5px; color: var(--muted); }
+.affils sup { font-size: 10px; margin-right: 3px; }
+.affils a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-line); }
+.affils .affil-note { margin-top: 8px; font-size: 13.5px; color: var(--faint); }
+.nowrap { white-space: nowrap; }
+.logo-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.logo-btn { display: inline-flex; align-items: center; justify-content: center; height: 66px; padding: 10px 18px; background: #ffffff; border: 1px solid rgba(17, 24, 39, 0.12); border-radius: 12px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.logo-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(17, 24, 39, 0.08); }
+.logo-btn img { height: 40px; width: auto; display: block; }
+.logo-btn.is-insight img { height: 34px; }
+.logo-btn.is-wordmark img { height: 26px; }
+@media (max-width: 560px) { .logo-btn { height: 56px; padding: 8px 12px; } .logo-btn img { height: 32px; } .logo-btn.is-insight img { height: 26px; } .logo-btn.is-wordmark img { height: 21px; } }
+.paper-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.btn-pill { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: 500 15px/1.2 var(--font-body); text-decoration: none; cursor: pointer; }
+.btn-pill:hover { border-color: var(--faint); }
+.btn-pill.is-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn-pill.is-primary:hover { filter: brightness(1.06); }
+.btn-pill.is-dark { background: var(--dark); border-color: var(--dark); color: var(--dark-ink); }
+.btn-pill[aria-disabled="true"] { cursor: default; color: var(--faint); }
+.btn-pill[aria-disabled="true"]:hover { border-color: var(--line); }
+.btn-pill .soon { font-size: 12.5px; color: var(--faint); }
+
+/* cover: recorded runs */
+.cover { max-width: 1040px; margin: 8px auto 0; padding: 0 var(--gutter); }
+.sim-card { background: var(--panel); border: 1px solid var(--line); border-radius: 24px; padding: clamp(14px, 2vw, 22px); display: grid; gap: 14px; }
+.sim-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.seg { display: inline-flex; gap: 2px; padding: 3px; background: var(--card); border: 1px solid var(--line); border-radius: 999px; }
+.seg button { font: 500 11px/1 var(--font-body); letter-spacing: 0.14em; text-transform: uppercase; padding: 9px 14px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.clock { font-size: 11px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text); }
+.clock b { font-family: var(--font-mono); font-weight: 500; color: var(--accent); letter-spacing: 0; font-variant-numeric: tabular-nums; display: inline-block; min-width: 6ch; text-align: right; }
+.prompt { background: var(--card); border: 1px solid var(--line-soft); border-radius: 14px; padding: 11px 16px; font-size: 14px; color: var(--muted); max-height: 7.4em; overflow: auto; white-space: pre-wrap; text-align: left; }
+.prompt b { font-size: 10.5px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-right: 10px; }
+.lanes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 760px) { .lanes { grid-template-columns: minmax(0, 1fr); } }
+.lane { background: var(--card); border: 1px solid var(--line-soft); border-radius: 16px; padding: 14px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.lane-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.lane-name { font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 8px; color: var(--ink); }
+.dot { width: 10px; height: 10px; border-radius: 3px; background: var(--c); flex: none; }
+.lane-sub { font-size: 12.5px; color: var(--faint); }
+.lane-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.lane-stats .v { font-family: var(--font-mono); font-size: 17px; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--ink); }
+.lane-stats .k { font-size: 10px; color: var(--faint); letter-spacing: 0.12em; text-transform: uppercase; }
+.speedup { font-family: var(--font-mono); font-weight: 500; font-size: 12.5px; padding: 3px 9px; border-radius: 999px; background: var(--panel); color: var(--muted); font-variant-numeric: tabular-nums; }
+.lane.done .speedup { background: var(--c); color: var(--chip-ink); }
+.grid { display: grid; grid-template-columns: repeat(32, minmax(0, 1fr)); gap: 2px; }
+.cell { aspect-ratio: 1; border-radius: 2px; background: var(--mask); transition: background-color 0.35s ease; }
+.cell.c { background: color-mix(in srgb, var(--c) 55%, var(--mask)); }
+.cell.d { background: var(--c); }
+.cell.now { background: var(--flash); transition: none; }
+.cell.pad { opacity: 0.45; }
+.text { font-family: var(--font-mono); font-size: 12px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; height: 12em; overflow: auto; background: var(--panel); border-radius: 10px; padding: 8px 10px; color: var(--text); text-align: left; }
+.tk { border-radius: 3px; transition: color 0.25s ease, background-color 0.6s ease; }
+.tk.m { color: transparent; background: var(--mask-strong); }
+.tk.now { background: var(--flash); color: #111827; transition: none; }
+.tk.dr { background: color-mix(in srgb, var(--c) 20%, transparent); }
+.sim-bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.play { width: 42px; height: 42px; border-radius: 50%; border: 0; background: var(--dark); color: var(--dark-ink); display: inline-grid; place-items: center; cursor: pointer; }
+.play svg { width: 14px; height: 14px; }
+.play .i-play, .play.is-paused .i-pause { display: none; }
+.play.is-paused .i-play { display: block; }
+.btn-sm { font: 500 13px/1 var(--font-body); padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; }
+.btn-sm:hover { border-color: var(--faint); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 10.5px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.legend i { display: inline-block; width: 11px; height: 11px; border-radius: 2px; vertical-align: -1px; margin-right: 6px; }
+.caption { font-size: 13px; color: var(--faint); text-align: center; line-height: 1.6; max-width: 780px; margin: 0 auto; }
+.caption b { color: var(--text); font-weight: 600; }
+
+.divider { max-width: var(--page-w); margin: 64px auto; padding: 0 var(--gutter); }
+.divider hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
+
+/* overview + stats */
+.wrap { max-width: var(--page-w); margin: 0 auto; padding: 0 var(--gutter); }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 28px; padding: clamp(20px, 3vw, 32px); }
+.headline { font-family: var(--font-display); font-weight: 600; font-size: clamp(24px, 2.4vw, 31px); line-height: 1.28; letter-spacing: -0.015em; color: var(--ink); max-width: 900px; margin-top: 18px; text-wrap: balance; }
+.headline .hl, .headline a.hl { color: var(--accent); text-decoration: none; }
+.cards3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
+.ov-card { background: var(--card); border: 1px solid var(--line-soft); border-radius: 18px; padding: 22px; }
+.ov-card .eyebrow { color: var(--accent); }
+.ov-card p { margin-top: 12px; color: var(--body); font-size: 15.5px; line-height: 1.6; }
+.ov-card p b { color: var(--ink); font-weight: 600; }
+@media (max-width: 860px) { .cards3 { grid-template-columns: minmax(0, 1fr); } }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; margin-top: 32px; }
+.stat-card { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 24px; display: grid; gap: 18px; align-content: start; }
+.stat-card .tag { justify-self: start; }
+.stat-value { font-family: var(--font-display); font-weight: 600; font-size: 30px; line-height: 1.15; color: var(--ink); }
+.stat-desc { color: var(--faint); font-size: 14.5px; line-height: 1.55; }
+@media (max-width: 1000px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .stats { grid-template-columns: minmax(0, 1fr); } }
+
+/* article */
+.layout { max-width: var(--page-w); margin: 104px auto 0; padding: 0 var(--gutter); display: grid; grid-template-columns: minmax(0, 1fr) 230px; gap: 64px; }
+.article-body { min-width: 0; }
+.text-block { margin-bottom: 104px; scroll-margin-top: 88px; }
+.text-block > p { color: var(--body); font-size: 17.5px; line-height: 1.68; max-width: 72ch; margin-top: 18px; }
+.text-block > p.src { font-size: 13.5px; color: var(--faint); margin-top: 10px; }
+.text-block h3 { font-family: var(--font-display); font-weight: 600; font-size: 22px; line-height: 1.3; color: var(--ink); margin-top: 44px; }
+.text-block .headline { text-wrap: pretty; }
+.text-block code { font-family: var(--font-mono); font-size: 0.86em; color: var(--accent); background: var(--panel); border: 1px solid var(--line-soft); border-radius: 4px; padding: 1px 5px; }
+.callout { margin-top: 30px; border-left: 3px solid var(--accent); background: var(--callout); border-radius: 0 12px 12px 0; padding: 20px 24px; }
+.callout .eyebrow { color: var(--accent); }
+.callout p { margin-top: 10px; font-size: 19px; line-height: 1.55; color: var(--text); }
+.chart-card { margin-top: 28px; background: var(--panel); border: 1px solid var(--line); border-radius: 24px; padding: clamp(16px, 2.4vw, 28px); }
+.chart-title { font-size: 18px; font-weight: 500; color: var(--ink); }
+.chart-sub { font-size: 13.5px; color: var(--faint); margin-top: 2px; }
+.scroll-x { overflow-x: auto; margin-top: 14px; }
+.chart { display: block; width: 100%; min-width: 560px; height: auto; }
+.chart text { font-family: var(--font-body); fill: var(--faint); font-size: 12px; }
+.chart .task { fill: var(--ink); font-weight: 500; font-size: 13px; }
+.chart .val { fill: var(--text); font-family: var(--font-mono); font-size: 11px; }
+.chart .gridline { stroke: var(--line); stroke-width: 1; }
+.chart .base { stroke: var(--faint); stroke-dasharray: 3 3; }
+.table-card { margin-top: 14px; background: var(--card); border: 1px solid var(--line-soft); border-radius: 16px; overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; font-variant-numeric: tabular-nums; }
+th, td { padding: 10px 14px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+thead th { font-size: 10.5px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); }
+tbody tr:last-child td { border-bottom: 0; }
+tr.ours td { background: var(--accent-soft); }
+tr.ours td:first-child { font-weight: 600; color: var(--ink); }
+td .x { color: var(--faint); font-size: 12px; margin-left: 6px; }
+.res-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 28px; }
+@media (max-width: 860px) { .res-cards { grid-template-columns: minmax(0, 1fr); } }
+.res-cards .stat-card { border-radius: 18px; padding: 22px; gap: 14px; }
+.res-cards .stat-value { font-size: 28px; }
+.btn-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+ol.steps { margin: 24px 0 0; padding-left: 22px; display: grid; gap: 12px; color: var(--body); font-size: 17px; line-height: 1.6; max-width: 72ch; }
+ol.steps b { color: var(--ink); font-weight: 600; }
+.oss { margin-top: 36px; background: var(--panel); border: 1px solid var(--line); border-radius: 28px; padding: clamp(20px, 3vw, 40px); }
+.oss h3.big { font-family: var(--font-display); font-weight: 600; font-size: clamp(25px, 3vw, 38px); line-height: 1.2; color: var(--ink); margin-top: 20px; }
+.oss > p { margin-top: 14px; color: var(--body); font-size: 16.5px; line-height: 1.6; max-width: 70ch; }
+.code { margin-top: 24px; background: var(--card); border: 1px solid var(--line-soft); border-radius: 18px; padding: 18px 20px; }
+.code pre { margin: 0; overflow-x: auto; font: 12px/1.75 var(--font-mono); color: var(--text); white-space: pre; }
+.code .c { color: var(--faint); }
+.code .k { color: var(--accent); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 11px; border: 1px solid var(--line); border-radius: 6px; font-size: 13px; background: var(--card); color: var(--text); }
+.chip i { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.chip.is-transfer i { background: var(--faint); }
+.figure { margin-top: 28px; }
+.figure .frame { background: #ffffff; border: 1px solid var(--line); border-radius: 16px; padding: 14px; overflow-x: auto; }
+.figure img { display: block; width: 100%; min-width: 560px; height: auto; }
+.figure figcaption { font-size: 14px; color: var(--faint); line-height: 1.55; margin-top: 12px; }
+.figure figcaption b { color: var(--text); font-weight: 600; }
+.flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; margin-top: 30px; }
+.flow-step { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 18px; }
+.flow-num { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 4px; background: var(--accent); color: var(--accent-ink); font-size: 12px; font-weight: 600; }
+.flow-step h4 { font-size: 16px; font-weight: 500; color: var(--ink); margin-top: 12px; }
+.flow-step p { font-size: 14px; color: var(--muted); line-height: 1.55; margin-top: 8px; }
+.flow-step.is-accent { background: var(--dark); border-color: var(--dark); }
+.flow-step.is-accent h4, .flow-step.is-accent p { color: var(--dark-ink); }
+.flow-step.is-accent .flow-num { background: var(--dark-ink); color: var(--dark); }
+.flow-step:not(:last-child)::after { content: "\2192"; position: absolute; right: -17px; top: 44%; color: var(--accent); font-size: 16px; }
+@media (max-width: 860px) { .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); } .flow-step::after { display: none; } }
+@media (max-width: 520px) { .flow { grid-template-columns: minmax(0, 1fr); } }
+
+.abstract-block { margin-top: 40px; max-width: 900px; margin-left: auto; margin-right: auto; }
+.abstract-block p { margin-top: 16px; font-size: 17.5px; line-height: 1.7; color: var(--body); }
+dl.terms { margin: 14px 0 0; display: grid; grid-template-columns: minmax(150px, 220px) minmax(0, 1fr); gap: 12px 20px; background: var(--card); border: 1px solid var(--line-soft); border-radius: 16px; padding: 18px 20px; }
+dl.terms dt { font-weight: 600; color: var(--ink); font-size: 15px; }
+dl.terms dd { margin: 0; color: var(--body); font-size: 15px; line-height: 1.6; }
+@media (max-width: 640px) { dl.terms { grid-template-columns: minmax(0, 1fr); gap: 4px 0; } dl.terms dd { margin-bottom: 10px; } }
+
+/* sidebar */
+.aside { position: sticky; top: 96px; align-self: start; }
+.aside .eyebrow { letter-spacing: 0.22em; font-size: 12px; }
+.quick { display: grid; gap: 2px; margin-top: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.quick a, .quick button { display: flex; gap: 10px; align-items: center; color: var(--text); text-decoration: none; padding: 7px 0; font: 400 16px var(--font-body); background: none; border: 0; cursor: pointer; text-align: left; }
+.quick a:hover, .quick button:hover, .toc a:hover { color: var(--accent); }
+.quick .off { color: var(--faint); cursor: default; }
+.share { margin-top: 10px; }
+.toc { display: grid; gap: 2px; margin-top: 18px; }
+.toc a { display: flex; gap: 12px; align-items: baseline; color: var(--text); text-decoration: none; padding: 5px 0; font-size: 15px; }
+.toc span { color: var(--faint); font-family: var(--font-mono); font-size: 12px; }
+@media (max-width: 1100px) { .layout { grid-template-columns: minmax(0, 1fr); } .aside { display: none; } }
+
+/* cite + affiliations + footer */
+.cite { max-width: var(--page-w); margin: 0 auto; padding: 0 var(--gutter); scroll-margin-top: 88px; }
+.cite h2 { font-family: var(--font-display); font-weight: 600; font-size: clamp(30px, 3.4vw, 42px); letter-spacing: -0.015em; color: var(--ink); }
+.bib { position: relative; margin-top: 26px; background: var(--panel); border: 1px solid var(--line); border-radius: 24px; padding: 26px 28px; }
+.bib pre { margin: 0; font: 13.5px/1.75 var(--font-mono); color: var(--text); white-space: pre-wrap; overflow-wrap: anywhere; padding-right: 130px; }
+.bib .copy { position: absolute; top: 18px; right: 18px; padding: 9px 16px; font-size: 13.5px; }
+@media (max-width: 600px) { .bib { padding: 20px; } .bib pre { padding-right: 0; padding-top: 46px; font-size: 12.5px; } }
+.cite-note { margin-top: 16px; font-size: 15px; color: var(--muted); }
+.cite-note a { text-decoration: none; border-bottom: 1px solid var(--accent-line); }
+.affil-panel { max-width: var(--page-w); margin: 112px auto 0; padding: 0 var(--gutter); }
+.cta { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 48px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 32px; padding: clamp(24px, 4vw, 52px); }
+.cta h3 { font-family: var(--font-display); font-weight: 600; font-size: clamp(27px, 3vw, 40px); line-height: 1.2; letter-spacing: -0.015em; color: var(--ink); margin-top: 26px; text-wrap: balance; }
+.cta p { color: var(--body); font-size: 16.5px; line-height: 1.68; margin-top: 22px; }
+.people-card { background: var(--card); border: 1px solid var(--line-soft); border-radius: 22px; padding: 24px; }
+.person { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 16px; align-items: start; }
+.avatar img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; display: block; }
+.person-name { font-family: var(--font-display); font-weight: 600; font-size: 20px; color: var(--ink); }
+.person-role { font-size: 14.5px; color: var(--body); line-height: 1.55; margin-top: 2px; }
+.person-role a { text-decoration: none; border-bottom: 1px solid var(--accent-line); }
+.people-card ul { margin: 16px 0 0; padding-left: 18px; color: var(--body); font-size: 14.5px; line-height: 1.55; display: grid; gap: 8px; }
+.people-card ul a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--line); }
+.affil-logos { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.affil-logos span { display: inline-grid; place-items: center; height: 44px; padding: 6px 12px; background: #ffffff; border: 1px solid rgba(17, 24, 39, 0.12); border-radius: 8px; }
+.affil-logos img { height: 28px; width: auto; display: block; }
+@media (max-width: 900px) { .cta { grid-template-columns: minmax(0, 1fr); gap: 28px; } }
+.site-footer { margin-top: 112px; border-top: 1px solid var(--line); background: var(--panel); }
+.foot-top { max-width: var(--page-w); margin: 0 auto; padding: 28px var(--gutter) 20px; }
+.foot-title { font-family: var(--font-display); font-weight: 600; font-size: 19px; color: var(--ink); text-wrap: balance; }
+.foot-links { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 14px; font-size: 15px; }
+.foot-links a { text-decoration: none; }
+.foot-links .off { color: var(--faint); }
+.foot-bottom { border-top: 1px solid var(--line); }
+.foot-bottom p { max-width: var(--page-w); margin: 0 auto; padding: 18px var(--gutter) 30px; font-size: 13px; color: var(--faint); line-height: 1.6; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .cell, .tk, .logo-btn { transition: none; } }
+</style>
+<!--BODY-->
+<nav class="site-nav" aria-label="Page">
+  <div class="nav-inner">
+    <a class="wordmark" href="#top">On the SPOT</a>
+    <div class="nav-links">
+      <a class="nl" href="#overview">Overview</a>
+      <a class="nl" href="#results">Results</a>
+      <a class="nl" href="#use">Use it</a>
+      <a class="nl" href="#method">Method</a>
+      <a class="nl" href="#details">Details</a>
+      <a class="nl" href="#questions">Questions</a>
+      <a class="nl" href="#bibtex">BibTeX</a>
+      <span class="nav-cta" aria-disabled="true" data-todo="arxiv">arXiv <span class="soon">soon</span></span>
+    </div>
+  </div>
+</nav>
+
+<header class="article-header" id="top">
+  <p class="meta">Preprint · 2026</p>
+  <h1 class="title">On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via <span class="nowrap">Commit-Order</span> Prediction</h1>
+  <p class="dek">SPOT predicts where a diffusion language model commits next, so the model verifies several future steps in one pass, with its exact output distribution.</p>
+  <ul class="value-points">
+    <li><span class="vp-label">Result</span><span>Up to 6.8× fewer model passes and 3.2× the throughput of standard decoding, ahead of every drafting baseline at T = 0 and T = 1.</span></li>
+    <li><span class="vp-label">Why</span><span>The previous pass already has the right token at 92–100% of positions; SPOT predicts the order.</span></li>
+    <li><span class="vp-label">Exact</span><span>Coupled-noise verification checks a whole draft tree in one pass, exact at any temperature.</span></li>
+  </ul>
+  <div class="authors">
+    <span class="author"><a href="https://orcid.org/0009-0004-6587-9594" target="_blank" rel="noopener">Eliezer Shlomi</a><sup>1,2*</sup></span>
+    <span class="author"><a href="https://scholar.google.co.il/citations?user=7OSo8DkAAAAJ&amp;hl=en" target="_blank" rel="noopener">Eliron Rahimi</a><sup>1,2*</sup></span>
+    <span class="author"><a href="https://www.cs.technion.ac.il/~mendlson/" target="_blank" rel="noopener">Avi Mendelson</a><sup>1</sup></span>
+    <span class="author"><a href="https://chaimbaskin.bgu.ac.il/" target="_blank" rel="noopener">Chaim Baskin</a><sup>2</sup></span>
+  </div>
+  <div class="affils">
+    <span><sup>1</sup>Technion – Israel Institute of Technology</span>
+    <span><sup>2</sup>INSIGHT Lab, School of Electrical and Computer Engineering, Ben-Gurion University of the Negev</span>
+    <span class="affil-note"><sup>*</sup>Equal contribution · Correspondence: <a class="nowrap" href="mailto:eliezer@campus.technion.ac.il,elironrahimi@campus.technion.ac.il">{eliezer, elironrahimi}@campus.technion.ac.il</a></span>
+  </div>
+  <nav class="logo-row" aria-label="Institutions of the authors">
+    <a class="logo-btn" href="https://www.technion.ac.il/en/" target="_blank" rel="noopener" title="Technion – Israel Institute of Technology"><img src="assets/logos/technion-wide.svg" alt="Technion – Israel Institute of Technology"></a>
+    <a class="logo-btn" href="https://www.bgu.ac.il/en/" target="_blank" rel="noopener" title="Ben-Gurion University of the Negev"><img src="assets/logos/bgu-wide.svg" alt="Ben-Gurion University of the Negev"></a>
+    <a class="logo-btn is-insight" href="https://insight.bgu.ac.il/" target="_blank" rel="noopener" title="INSIGHT Lab, Ben-Gurion University of the Negev"><img src="assets/logos/insight-wide.png" alt="INSIGHT Lab, Ben-Gurion University of the Negev" width="1400" height="253"></a>
+  </nav>
+  <div class="paper-links">
+    <a class="btn-pill is-primary" href="https://github.com/Eliezer318/SPOT-dLLM" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Code</a>
+    <a class="btn-pill" href="https://colab.research.google.com/github/Eliezer318/SPOT-dLLM/blob/main/colab/spot_quickstart.ipynb" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m10 8.5 5 3.5-5 3.5z"/></svg>Open in Colab</a>
+    <a class="btn-pill" href="https://huggingface.co/EliezerS/SPOT-dLLM" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.4 2.2 2 3.5 2s2.5-.6 3.5-2"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>Drafters</a>
+    <span class="btn-pill" aria-disabled="true" data-todo="arxiv"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>Paper <span class="soon">soon</span></span>
+    <a class="btn-pill" href="#bibtex"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 10h16M4 14h10M4 18h7"/></svg>BibTeX</a>
+  </div>
+</header>
+
+<section class="cover" id="demo" aria-label="Recorded runs, replayed in real time">
+  <div class="sim-card">
+    <div class="sim-top">
+      <div class="seg" role="group" aria-label="Example">
+        <button type="button" data-task="gsm8k" aria-pressed="true">GSM8K</button>
+        <button type="button" data-task="humaneval" aria-pressed="false">HumanEval</button>
+      </div>
+      <span class="clock">Time <b id="clock">0.0 s</b></span>
+    </div>
+    <div class="prompt" id="prompt"></div>
+    <div class="lanes" id="lanes"></div>
+    <div class="sim-bottom">
+      <div class="controls">
+        <button type="button" class="play" id="play" aria-label="Pause"><svg class="i-pause" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><rect x="2" y="1.5" width="3.4" height="11" rx="1"/><rect x="8.6" y="1.5" width="3.4" height="11" rx="1"/></svg><svg class="i-play" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><path d="M3 1.6v10.8a.6.6 0 0 0 .9.5l8.4-5.4a.6.6 0 0 0 0-1L3.9 1.1a.6.6 0 0 0-.9.5z"/></svg></button>
+        <button type="button" class="btn-sm" id="restart">Restart</button>
+        <div class="seg" role="group" aria-label="Replay speed">
+          <button type="button" data-speed="0.5" aria-pressed="false">0.5×</button>
+          <button type="button" data-speed="1" aria-pressed="true">1×</button>
+          <button type="button" data-speed="2" aria-pressed="false">2×</button>
+        </div>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--mask)"></i>Masked</span>
+        <span><i style="background:var(--flash)"></i>Current pass</span>
+        <span><i style="background:color-mix(in srgb, var(--free) 55%, var(--mask))"></i>Model's own step</span>
+        <span><i style="background:var(--spotg)"></i>Accepted draft</span>
+      </div>
+    </div>
+    <p class="caption"><b>Recorded runs, replayed in real time.</b> Each panel replays a logged SDAR-8B run at its measured speed on one RTX 6000 Ada. All four write the same 256 tokens; bright cells come from accepted drafts.</p>
+    <p class="caption" id="race-note"></p>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<section class="wrap" id="overview" style="scroll-margin-top:88px">
+  <div class="panel">
+    <span class="tag">Overview · How it works</span>
+    <h2 class="headline">The tokens are nearly known in advance. SPOT predicts the order and checks a whole tree of futures in one pass.</h2>
+    <div class="cards3">
+      <div class="ov-card"><span class="eyebrow">The bottleneck</span><p><b>Order is the key.</b> The previous pass already has the right token at 92–100% of positions; a draft must predict the next position.</p></div>
+      <div class="ov-card"><span class="eyebrow">The drafter</span><p><b>A 0.62M-parameter order model.</b> It reads the stale top-32 probabilities, predicts the next commit and grows a tree of candidate block states, best first.</p></div>
+      <div class="ov-card"><span class="eyebrow">The verifier</span><p><b>One forward, exact acceptance.</b> One batched pass checks every candidate state; an accepted draft equals the model's own next state, with shared Gumbel noise at T &gt; 0.</p></div>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat-card"><span class="tag">Order model</span><div class="stat-value">0.62M</div><p class="stat-desc">parameters, reading only the model's output distributions.</p></div>
+    <div class="stat-card"><span class="tag">Model passes</span><div class="stat-value">up to 6.8× fewer</div><p class="stat-desc">forward passes than standard decoding on SDAR-8B.</p></div>
+    <div class="stat-card"><span class="tag">Throughput</span><div class="stat-value">up to 3.2×</div><p class="stat-desc">that of standard decoding, output unchanged.</p></div>
+    <div class="stat-card"><span class="tag">Models</span><div class="stat-value">6 diffusion LMs</div><p class="stat-desc">with drafters that transfer across models.</p></div>
+  </div>
+</section>
+
+<section class="wrap" id="tldr" style="scroll-margin-top:88px">
+  <div class="abstract-block">
+    <span class="tag is-outline">TL;DR</span>
+    <p>SPOT is lossless speculative decoding for diffusion language models: a 0.62M-parameter drafter predicts the commit order, and the model verifies a whole draft tree in one pass.</p>
+  </div>
+</section>
+
+<div class="layout">
+  <main class="article-body">
+    <section class="text-block" id="results">
+      <span class="tag is-outline">01 · Results</span>
+      <h2 class="headline">SPOT and SPOT-γ beat every drafting baseline on every task, at <span class="hl">2.0–3.1×</span> the throughput of standard decoding.</h2>
+      <p class="src">Sections 5.1 and 5.2 of the paper, with Appendix F.</p>
+      <p>SDAR-8B, block 32, 256 tokens, budget 8, T = 0; three seeds, n = 350 prompts (HumanEval 164). All drafters share one decoder and verifier, so the comparison isolates drafting.</p>
+      <div class="chart-card">
+        <div class="chart-title">Throughput over standard decoding</div>
+        <div class="chart-sub">SDAR-8B · block 32 · 256 tokens · budget 8 · T = 0 · mean of three seeds</div>
+        <div class="scroll-x"><svg class="chart" id="chart" role="img" aria-label="Throughput ratio by task and method"></svg></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Target forward passes per sample</div>
+        <div class="chart-sub">Fewer is better · same setting</div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>Method</th><th>GSM8K</th><th>MBPP</th><th>HumanEval</th><th>MATH500</th></tr></thead>
+            <tbody id="nfe-body"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="callout"><span class="eyebrow">What you learn</span><p>A learned commit order beats every drafting baseline on every task: 15–35% fewer passes than Spiffy's calibrated graph, at 1.1–1.5× its throughput.</p></div>
+      <div class="res-cards">
+        <div class="stat-card"><span class="tag">Sampling at T = 1</span><div class="stat-value">2.16–3.09×</div><p class="stat-desc">SPOT-γ throughput, with the sampling distribution kept exact.</p></div>
+        <div class="stat-card"><span class="tag">Longer outputs</span><div class="stat-value">3.23×</div><p class="stat-desc">SPOT-γ throughput on MBPP at T = 1 with 512 tokens, up from 2.86× at 256.</p></div>
+        <div class="stat-card"><span class="tag">Transfer</span><div class="stat-value">6 DLMs</div><p class="stat-desc">SDAR-8B, 4B and 1.7B, LLaDA2.0-mini, LLaDA-8B and Dream-7B. The LLaDA2.0-mini checkpoint needs 3–7% more passes on SDAR-8B and still beats every baseline.</p></div>
+      </div>
+    </section>
+
+    <section class="text-block" id="use">
+      <span class="tag is-outline">02 · Use it</span>
+      <h2 class="headline">Run SPOT with the <a class="hl" href="https://github.com/Eliezer318/SPOT-dLLM" target="_blank" rel="noopener">released code</a>, in your browser or on your own GPU.</h2>
+      <p class="src">Code, drafters and a Colab notebook, by the authors.</p>
+      <p>The repository holds the decoder, the coupled-noise verifier and six trained drafters, also on Hugging Face. The Colab notebook runs SDAR-1.7B with its drafter on a free GPU.</p>
+      <div class="btn-row">
+        <a class="btn-pill is-primary" href="https://colab.research.google.com/github/Eliezer318/SPOT-dLLM/blob/main/colab/spot_quickstart.ipynb" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m10 8.5 5 3.5-5 3.5z"/></svg>Open the Colab notebook</a>
+        <a class="btn-pill" href="https://github.com/Eliezer318/SPOT-dLLM" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub: SPOT-dLLM</a>
+        <a class="btn-pill" href="https://huggingface.co/EliezerS/SPOT-dLLM" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.4 2.2 2 3.5 2s2.5-.6 3.5-2"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>Drafters on Hugging Face</a>
+      </div>
+      <ol class="steps">
+        <li><b>Install.</b> PyTorch for your driver, then the requirements; models download on first use.</li>
+        <li><b>Pick a drafter.</b> One 0.62M-parameter checkpoint per target, in <code>drafters/</code>.</li>
+        <li><b>Decode.</b> <code>run_sweep.py</code> runs a task at a draft budget and logs generations, scores and acceptance.</li>
+      </ol>
+      <div class="oss">
+        <span class="tag">Open source</span>
+        <h3 class="big">Speed up a diffusion language model with a 0.62M-parameter drafter.</h3>
+        <p>Clone, get the drafters, decode. Budget 0 is the draft-free control, run in the same call.</p>
+        <div class="btn-row"><a class="btn-pill is-dark" href="https://github.com/Eliezer318/SPOT-dLLM" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Open on GitHub</a></div>
+        <div class="code">
+<pre><span class="c"># 1. clone and install</span>
+git clone https://github.com/Eliezer318/SPOT-dLLM && cd SPOT-dLLM
+<span class="c"># match the CUDA build to your driver</span>
+pip install torch --index-url https://download.pytorch.org/whl/cu124
+pip install -r requirements.txt
+
+<span class="c"># 2. drafters: in drafters/, also on Hugging Face</span>
+huggingface-cli download EliezerS/SPOT-dLLM --local-dir drafters
+
+<span class="c"># 3. SPOT on SDAR-8B, MBPP, budgets 0 (draft-free), 8 and 20</span>
+<span class="k">python</span> run_sweep.py --model sdar --block-length 32 --gen-length 256 \
+  --task mbpp --limit 100 --temperature 0.0 --verify match \
+  --layout concat --cache on --unmasking single --suffix skip --pad-pieces -1 \
+  --draft slot --slot-mode ddtree_b --slot-ckpt drafters/sdar8b_b32.pt --slot-tokgate 0.6 \
+  --budgets 0,8,20 --seeds 0 --out-root runs/sdar8b/mbpp/spot</pre>
+          <div class="chips" aria-label="Supported targets">
+            <span class="chip" title="native drafter"><i></i>SDAR-8B</span>
+            <span class="chip" title="native drafter"><i></i>SDAR-4B</span>
+            <span class="chip" title="native drafter"><i></i>SDAR-1.7B</span>
+            <span class="chip" title="native drafter"><i></i>LLaDA2.0-mini</span>
+            <span class="chip is-transfer" title="driven by a transferred drafter"><i></i>LLaDA-8B</span>
+            <span class="chip is-transfer" title="driven by a transferred drafter"><i></i>Dream-7B</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="text-block" id="method">
+      <span class="tag is-outline">03 · Method</span>
+      <h2 class="headline">SPOT predicts <span class="hl">where</span> the model commits next, then verifies a whole tree of block states in one pass.</h2>
+      <p class="src">Sections 3 and 4 of the paper, with Appendices A and C.</p>
+      <p>A block-diffusion model fills a block of masked positions over several passes, committing its most confident position each time. Each commitment changes the predictions for the rest of the block, so the model decides both what to write and where.</p>
+      <figure class="figure">
+        <div class="frame"><img src="assets/fig_method.png" width="1650" height="655" alt="Left: the target commits one masked position per forward pass, its highest-confidence one. Right: SPOT's order model reads the stale distributions, predicts which position commits next, grows a tree of hypothetical block states, and a single target forward verifies every state; the deepest state that equals the target's own next state is accepted."></div>
+        <figcaption><b>Figure 1.</b> SPOT overview (red: committed; amber dashed: drafted; grey: masked, with its stale argmax token). (a) The model commits its most confident position per forward. (b) SPOT predicts the next position with a 0.62M order model, grows a tree of states by prefix mass (edge width) and verifies them all in one batched forward, committing three positions.</figcaption>
+      </figure>
+      <p>The previous pass already names the right token at 92–100% of positions, so SPOT spends its capacity on the order: it predicts the next position after each hypothetical commitment and keeps a second token candidate where the model is unsure.</p>
+      <div class="flow">
+        <div class="flow-step"><span class="flow-num">1</span><h4>Read the stale table</h4><p>The top-32 distribution at each masked position, from the last pass.</p></div>
+        <div class="flow-step"><span class="flow-num">2</span><h4>Predict the order</h4><p>A 0.62M-parameter model scores the next position, given the branch so far.</p></div>
+        <div class="flow-step"><span class="flow-num">3</span><h4>Grow a tree</h4><p>Branches expand best first by prefix mass, up to the budget.</p></div>
+        <div class="flow-step is-accent"><span class="flow-num">4</span><h4>Verify once</h4><p>One batched pass checks every state and accepts the deepest one that matches the model's own step.</p></div>
+      </div>
+      <div class="callout"><span class="eyebrow">What you learn</span><p>Knowing the future position order is almost as good as knowing the full draft trajectory.</p></div>
+    </section>
+
+    <section class="text-block" id="details">
+      <span class="tag is-outline">04 · Details</span>
+      <h2 class="headline">What makes the drafter work, and where its <span class="hl">limits</span> are.</h2>
+      <p class="src">Sections 3, 5.3–5.5 and 6 of the paper, with Appendices A and F.</p>
+      <h3>Positions are worth more than tokens.</h3>
+      <p>Oracle runs show the headroom: on GSM8K, true positions alone cut passes by 5.4× to 7.1× as the budget grows from 8 to 20, while true tokens alone give 3.3–6.5× at budget 20. SPOT predicts the next commit with 75% held-out accuracy (22% for the stale-confidence order) and recovers 70–85% of the position oracle's reduction.</p>
+      <h3>Exact at any temperature.</h3>
+      <p>SPOT shares per-position Gumbel noise between the drafter and the model. Given the noise, the next step is deterministic, so a whole tree is checked by equality and the sampling distribution stays exact. At T = 1, SPOT uses 15–34% fewer passes than Spiffy at 1.15–1.48× its throughput.</p>
+      <h3>Branching beats a longer chain.</h3>
+      <p>A chain in place of the tree is the largest loss in the ablation: on MBPP, 7.3 more passes at budget 8 and 11.9 at budget 20, with throughput at budget 20 falling from 1.72× to 1.34×.</p>
+      <h3>One checkpoint, six models.</h3>
+      <p>Swapped checkpoints, tokenizers included: the LLaDA2.0-mini checkpoint needs 3–7% more passes on SDAR-8B and still beats every baseline. On LLaDA-8B and Dream-7B, new to every checkpoint, SPOT cuts 256 passes to 55–88 and 51–79; both use an approximate prefix cache, so these rows show reach, and exactness is shown on the other four models.</p>
+      <h3>Where the gains shrink.</h3>
+      <p>Gains shrink when verification is costly or acceptance is low: at wide blocks, on low-acceptance tasks, and at T ≥ 2, where noise-aware ranking beats the order model trained at T = 0. Exact tree packing under bidirectional attention remains open.</p>
+      <div class="btn-row"><span class="btn-pill" aria-disabled="true" data-todo="arxiv">Read the paper <span class="soon">soon</span></span></div>
+    </section>
+
+    <section class="text-block" id="questions">
+      <span class="tag is-outline">05 · Questions</span>
+      <h2 class="headline">Terms, common questions and <span class="hl">released resources</span>.</h2>
+      <p class="src">Condensed from Appendix H of the paper.</p>
+      <div class="chart-card">
+        <div class="chart-title">Terms</div>
+        <dl class="terms">
+          <dt>Stale conditionals</dt><dd>The model's latest predictions at a block's masked positions, reused for drafting with zero extra forward passes (Section 4.2).</dd>
+          <dt>Commit order</dt><dd>The sequence of positions the model commits, one per forward under exact decoding; the drafter predicts it as q<sub>φ</sub>(s | y) (Section 4.2).</dd>
+          <dt>Draft tree</dt><dd>Candidate block states grown best first from the drafter, up to a budget of D states verified in one batched forward (Section 4.2).</dd>
+          <dt>Coupled-noise match</dt><dd>Verification at T &gt; 0 with the drafter and the model sharing Gumbel noise, so checking reduces to state equality (Section 4.3).</dd>
+          <dt>SPOT (Speculating Positions Order Trajectory)</dt><dd>The method: a 0.62M-parameter, three-layer order model predicts the next committed position, the predictions grow a draft tree, and the model verifies the tree exactly (Section 4).</dd>
+          <dt>SPOT-γ</dt><dd>SPOT unpadded with a prefix-mass floor γ, so the verification budget adapts to drafter confidence; γ = 0.1 on SDAR-8B (Section 4.2, Appendix D.5).</dd>
+          <dt>NFE and throughput ratio</dt><dd>Target forward passes per sample, and throughput relative to the draft-free run of the same task, model and temperature (Section 5.1).</dd>
+        </dl>
+      </div>
+      <h3>What problem does SPOT solve?</h3>
+      <p>Lossless acceleration of diffusion language models. A diffusion model chooses both what to write and where; SPOT drafts those choices with a small learned model, and the model verifies them in one pass (Section 1).</p>
+      <h3>Why is commit order the bottleneck?</h3>
+      <p>The stale prediction already matches the true token in 92% of first-block commits and ≥ 90% thereafter, while the chance that the previous round's top-confidence position commits next drops to 3% by the ninth block. Oracles show true positions are worth more than true tokens on every task (Section 3.1).</p>
+      <h3>How does SPOT draft and verify?</h3>
+      <p>It predicts the next committed position from the stale top-32 probabilities and repeats after each hypothetical commitment to grow a tree; the model verifies the tree in one batched forward and accepts the longest prefix that matches its own trajectory (Section 4).</p>
+      <h3>Is the output exact when the model samples?</h3>
+      <p>Yes, with an exact prefix cache. At T = 0 verification reproduces the draft-free trajectory for any drafter (Proposition 1); at T &gt; 0 shared Gumbel noise gives the same distribution as draft-free decoding (Proposition 2). Draft quality affects speed alone (Section 4.3).</p>
+      <h3>How does SPOT differ from Spiffy, SSD and BlockSpec?</h3>
+      <p>They draft from a calibrated static graph, a confidence-ordered chain or a confidence tree; SPOT learns the commit order. Under one decoder and verifier it uses 15–35% fewer forwards than Spiffy at 1.1–1.5× its throughput on SDAR-8B (Section 5.2).</p>
+      <h3>Which models and benchmarks does the paper use?</h3>
+      <p>SDAR-8B (block 32) as the headline target, plus SDAR-4B, SDAR-1.7B and LLaDA2.0-mini, with transfer to LLaDA-8B and Dream-7B. Benchmarks: GSM8K, MBPP, HumanEval and MATH500; n = 350 (HumanEval 164), three seeds, 256 tokens (Section 5.1).</p>
+      <h3>What are the main results?</h3>
+      <p>On SDAR-8B, 3.2–4.7× fewer forwards than draft-free decoding at budget 8 (4.1–6.8× at budget 20) and 2.0–2.7× the throughput at budget 8; SPOT-γ reaches 3.23× on MBPP at T = 1 with 512 tokens. On SDAR-1.7B, where a forward is cheap, Spiffy leads three throughput columns at T = 0 and two at T = 1, with one tie (Sections 5.2–5.4).</p>
+      <h3>Does SPOT work beyond SDAR-8B?</h3>
+      <p>Yes, across six DLMs: the lowest NFE and highest throughput in every SDAR-4B comparison, and on LLaDA2.0-mini (a different tokenizer) the lowest NFE in all 36 comparisons and the higher throughput in 34. Transferred checkpoints also drive LLaDA-8B and Dream-7B (Section 5.4).</p>
+      <h3>Where this work sits</h3>
+      <p>SPOT brings speculative decoding to block-diffusion language models. It compares against self-drafting, draft-graph and confidence-tree speculation for DLMs (Gao et al., 2025; Agrawal et al., 2026; Pan et al., 2025), and verifies with Gumbel coupling (Daliri et al., 2025).</p>
+    </section>
+  </main>
+
+  <aside class="aside" aria-label="Quick links">
+    <div class="eyebrow">Quick links</div>
+    <div class="quick">
+      <a href="https://github.com/Eliezer318/SPOT-dLLM" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Code</a>
+      <a href="https://colab.research.google.com/github/Eliezer318/SPOT-dLLM/blob/main/colab/spot_quickstart.ipynb" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m10 8.5 5 3.5-5 3.5z"/></svg>Colab demo</a>
+      <a href="https://huggingface.co/EliezerS/SPOT-dLLM" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.4 2.2 2 3.5 2s2.5-.6 3.5-2"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>Drafters</a>
+      <span class="off" data-todo="arxiv" style="display:flex;gap:10px;align-items:center;padding:7px 0"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>Paper (soon)</span>
+      <a href="#bibtex"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 10h16M4 14h10M4 18h7"/></svg>BibTeX</a>
+    </div>
+    <div class="quick share"><button type="button" id="share"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg><span id="share-label">Share this page</span></button></div>
+    <nav class="toc" aria-label="Sections">
+      <a href="#results"><span>01</span>Results</a>
+      <a href="#use"><span>02</span>Use it</a>
+      <a href="#method"><span>03</span>Method</a>
+      <a href="#details"><span>04</span>Details</a>
+      <a href="#questions"><span>05</span>Questions</a>
+    </nav>
+  </aside>
+</div>
+
+<section class="cite" id="bibtex">
+  <h2>Cite this work.</h2>
+  <div class="bib">
+    <button type="button" class="btn-pill copy" id="copy-bib">Copy BibTeX</button>
+    <pre id="bib">@misc{shlomi2026spot,
+  title  = {{On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction}},
+  author = {Eliezer Shlomi and Eliron Rahimi and Avi Mendelson and Chaim Baskin},
+  year   = {2026},
+  url    = {https://github.com/Eliezer318/SPOT-dLLM}
+}</pre>
+  </div>
+  <p class="cite-note">Questions or issues: <a href="https://github.com/Eliezer318/SPOT-dLLM/issues" target="_blank" rel="noopener">open an issue on GitHub</a>.</p>
+</section>
+
+<section class="affil-panel" aria-label="Affiliations and acknowledgements">
+  <div class="cta">
+    <div>
+      <span class="tag">Affiliations and acknowledgements</span>
+      <h3>Faster diffusion language models, built with Israel's universities.</h3>
+      <p>Researchers from the Technion and the INSIGHT Lab at Ben-Gurion University of the Negev. Chaim Baskin heads the INSIGHT Lab. Code and drafters are released openly for reproduction and follow-up work.</p>
+      <div class="btn-row">
+        <a class="btn-pill" href="https://insight.bgu.ac.il/" target="_blank" rel="noopener">INSIGHT Lab</a>
+      </div>
+    </div>
+    <div class="people-card">
+      <div class="person">
+        <div class="avatar"><img src="assets/img/chaim-baskin.webp" alt="Chaim Baskin" width="64" height="64"></div>
+        <div>
+          <div class="person-name">Chaim Baskin</div>
+          <div class="person-role">Assistant Professor, Ben-Gurion University of the Negev<br>Head of the <a href="https://insight.bgu.ac.il/" target="_blank" rel="noopener">INSIGHT Lab</a></div>
+        </div>
+      </div>
+      <ul>
+        <li>Co-author of this work; contact <a href="mailto:chaimbaskin@bgu.ac.il">chaimbaskin@bgu.ac.il</a></li>
+        <li>Co-authors from the Technion and the INSIGHT Lab at Ben-Gurion University of the Negev</li>
+      </ul>
+      <div class="affil-logos" aria-label="Lab logos">
+        <span><img src="assets/logos/technion-wide.svg" alt="Technion – Israel Institute of Technology"></span>
+        <span><img src="assets/logos/insight-wide.png" alt="INSIGHT Lab, Ben-Gurion University of the Negev" width="1400" height="253"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="foot-top">
+    <div class="foot-title">On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via <span class="nowrap">Commit-Order</span> Prediction</div>
+    <div class="foot-links">
+      <a href="https://github.com/Eliezer318/SPOT-dLLM" target="_blank" rel="noopener">Code</a>
+      <a href="https://colab.research.google.com/github/Eliezer318/SPOT-dLLM/blob/main/colab/spot_quickstart.ipynb" target="_blank" rel="noopener">Colab notebook</a>
+      <a href="https://huggingface.co/EliezerS/SPOT-dLLM" target="_blank" rel="noopener">Drafters</a>
+      <a href="#bibtex">BibTeX</a>
+      <span class="off" data-todo="arxiv">Paper (soon)</span>
+    </div>
+  </div>
+  <div class="foot-bottom"><p>Project page for <i>On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction</i>. Replays use logged runs from the paper's SDAR-8B benchmark; the chart and table show the paper's numbers.</p></div>
+</footer>
+
+<script type="application/json" id="traces">/*__TRACES__*/</script>
+<script>
+(function () {
+  "use strict";
+  var DATA = JSON.parse(document.getElementById("traces").textContent);
+  var ARMS = [
+    { key: "free", name: "Draft-free", sub: "one commit per forward", c: "var(--free)" },
+    { key: "spiffy", name: "Spiffy", sub: "calibrated draft graph, budget 8", c: "var(--spiffy)" },
+    { key: "spot", name: "SPOT", sub: "learned order tree, budget 8", c: "var(--spot)" },
+    { key: "spotg", name: "SPOT-γ", sub: "mass floor γ = 0.1, unpadded", c: "var(--spotg)" }
+  ];
+  var G = 256;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var state = { task: "gsm8k", t: 0, speed: 1, playing: !reduce, hold: 0, last: null };
+  var lanes = [];
+  var clockEl = document.getElementById("clock");
+  var playBtn = document.getElementById("play");
+
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+
+  function build() {
+    var d = DATA[state.task];
+    var pr = document.getElementById("prompt");
+    pr.textContent = "";
+    pr.appendChild(el("b", null, state.task === "gsm8k" ? "Question" : "Function to complete"));
+    pr.appendChild(document.createTextNode(d.prompt));
+    var host = document.getElementById("lanes");
+    host.textContent = "";
+    lanes = ARMS.map(function (a) {
+      var arm = d.arms[a.key];
+      var lane = el("div", "lane"); lane.dataset.arm = a.key; lane.style.setProperty("--c", a.c);
+      var head = el("div", "lane-head");
+      var nm = el("div", "lane-name"); nm.appendChild(el("span", "dot")); nm.appendChild(el("span", null, a.name));
+      var sp = el("span", "speedup", "–");
+      head.appendChild(nm); head.appendChild(sp);
+      var sub = el("div", "lane-sub", a.sub);
+      var stats = el("div", "lane-stats");
+      function stat(k) { var s = el("div"); var v = el("div", "v", "0"); s.appendChild(v); s.appendChild(el("div", "k", k)); stats.appendChild(s); return v; }
+      var vF = stat("forwards"), vT = stat("tokens"), vR = stat("tokens / s");
+      var grid = el("div", "grid"); grid.setAttribute("aria-hidden", "true");
+      var cells = [];
+      for (var i = 0; i < G; i++) { var c = el("div", "cell" + (i >= d.eos ? " pad" : "")); grid.appendChild(c); cells.push(c); }
+      var text = el("div", "text"); text.setAttribute("aria-label", a.name + " output");
+      var spans = [];
+      for (var j = 0; j < d.eos; j++) { var s = el("span", "tk m", d.tokens[j] || ""); text.appendChild(s); spans.push(s); }
+      lane.appendChild(head); lane.appendChild(sub); lane.appendChild(stats); lane.appendChild(grid); lane.appendChild(text);
+      host.appendChild(lane);
+      var cum = [], acc = 0;
+      for (var r = 0; r < arm.rounds.length; r++) { acc += arm.rounds[r].t; cum.push(acc); }
+      return { a: a, arm: arm, el: lane, sp: sp, vF: vF, vT: vT, vR: vR, cells: cells, spans: spans, text: text, cum: cum, ptr: 0, written: 0, nowSet: [], done: false };
+    });
+    document.getElementById("race-note").textContent =
+      "This prompt: " + ARMS.map(function (a) { var x = d.arms[a.key]; return a.name + " " + x.nfe + " forwards in " + x.wall.toFixed(1) + " s"; }).join(" · ") +
+      ". Median speed-up on this task (n = " + (state.task === "gsm8k" ? 350 : 164) + "): Spiffy " + d.median_speedup.spiffy.toFixed(2) + "×, SPOT " + d.median_speedup.spot.toFixed(2) + "×, SPOT-γ " + d.median_speedup.spotg.toFixed(2) + "×.";
+    reset();
+  }
+
+  function reset() {
+    state.t = 0; state.hold = 0;
+    lanes.forEach(function (ln) {
+      ln.ptr = 0; ln.written = 0; ln.done = false; ln.nowSet = [];
+      ln.cells.forEach(function (c) { c.classList.remove("c", "d", "now"); });
+      ln.spans.forEach(function (s) { s.className = "tk m"; });
+      ln.el.classList.remove("done"); ln.sp.textContent = "–";
+      ln.text.scrollTop = 0;
+      paintStats(ln);
+    });
+    clockEl.textContent = "0.0 s";
+  }
+
+  function paintStats(ln) {
+    var t = Math.min(state.t, ln.cum[ln.cum.length - 1]);
+    ln.vF.textContent = String(ln.ptr);
+    ln.vT.textContent = String(ln.written);
+    ln.vR.textContent = t > 0.05 ? (ln.written / t).toFixed(1) : "–";
+  }
+
+  function advance(ln) {
+    var changed = false;
+    while (ln.ptr < ln.cum.length && ln.cum[ln.ptr] <= state.t) {
+      ln.nowSet.forEach(function (i) { ln.cells[i].classList.remove("now"); if (ln.spans[i]) ln.spans[i].classList.remove("now"); });
+      ln.nowSet = [];
+      var rd = ln.arm.rounds[ln.ptr];
+      var lastPos = -1;
+      rd.c.forEach(function (pc) {
+        var pos = pc[0], depth = pc[1];
+        if (pos < 0 || pos >= G) return;
+        ln.cells[pos].classList.add(depth > 0 ? "d" : "c", "now");
+        var sp = ln.spans[pos];
+        if (sp) { sp.className = "tk now" + (depth > 0 ? " dr" : ""); lastPos = Math.max(lastPos, pos); }
+        ln.nowSet.push(pos);
+        ln.written += 1;
+      });
+      if (lastPos >= 0 && ln.spans[lastPos]) {
+        var s = ln.spans[lastPos], box = ln.text;
+        var top = s.offsetTop - box.offsetTop;
+        if (top > box.scrollTop + box.clientHeight - 24 || top < box.scrollTop) box.scrollTop = Math.max(0, top - box.clientHeight / 2);
+      }
+      ln.ptr += 1; changed = true;
+    }
+    if (!ln.done && ln.ptr >= ln.cum.length) {
+      ln.done = true; ln.el.classList.add("done");
+      var free = DATA[state.task].arms.free.wall;
+      ln.sp.textContent = ln.a.key === "free" ? "1.00×" : (free / ln.arm.wall).toFixed(2) + "×";
+      setTimeout(function () { ln.nowSet.forEach(function (i) { ln.cells[i].classList.remove("now"); if (ln.spans[i]) ln.spans[i].classList.remove("now"); }); }, 400);
+    }
+    if (changed || !ln.done) paintStats(ln);
+  }
+
+  function frame(ts) {
+    if (state.last == null) state.last = ts;
+    var dt = Math.min(0.1, (ts - state.last) / 1000); state.last = ts;
+    if (state.playing) {
+      if (lanes.every(function (l) { return l.done; })) {
+        state.hold += dt;
+        if (state.hold > 3) reset();
+      } else {
+        state.t += dt * state.speed;
+        lanes.forEach(advance);
+        clockEl.textContent = state.t.toFixed(1) + " s";
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function finishNow() { state.t = 1e9; lanes.forEach(advance); state.t = DATA[state.task].arms.free.wall; clockEl.textContent = state.t.toFixed(1) + " s"; lanes.forEach(paintStats); }
+  function setPlayUI() { playBtn.classList.toggle("is-paused", !state.playing); playBtn.setAttribute("aria-label", state.playing ? "Pause" : "Play"); }
+  function setPressed(sel, btn) { document.querySelectorAll(sel).forEach(function (b) { b.setAttribute("aria-pressed", String(b === btn)); }); }
+  document.querySelectorAll("[data-task]").forEach(function (b) {
+    b.addEventListener("click", function () { state.task = b.dataset.task; setPressed("[data-task]", b); build(); if (!state.playing) finishNow(); });
+  });
+  document.querySelectorAll("[data-speed]").forEach(function (b) {
+    b.addEventListener("click", function () { state.speed = parseFloat(b.dataset.speed); setPressed("[data-speed]", b); });
+  });
+  playBtn.addEventListener("click", function () {
+    state.playing = !state.playing; setPlayUI();
+    if (state.playing && lanes.every(function (l) { return l.done; })) reset();
+  });
+  document.getElementById("restart").addEventListener("click", function () { reset(); state.playing = true; setPlayUI(); });
+
+  build();
+  if (reduce) finishNow();
+  setPlayUI();
+  requestAnimationFrame(frame);
+
+  /* results chart: throughput ratio at D8, T = 0 (paper, main table) */
+  var TASKS = ["GSM8K", "MBPP", "HumanEval", "MATH500"];
+  var METHODS = [
+    { name: "SPOT-γ", c: "var(--spotg)", v: [2.76, 2.98, 3.09, 2.27], nfe: [75.1, 60.7, 66.5, 92.2], ours: true },
+    { name: "SPOT", c: "var(--spot)", v: [2.50, 2.61, 2.74, 2.03], nfe: [69.6, 56.7, 62.2, 84.5], ours: true },
+    { name: "Spiffy graph", c: "var(--spiffy)", v: [1.96, 1.86, 2.11, 1.80], nfe: [91.3, 83.4, 86.8, 99.4] },
+    { name: "SSD free chain", c: "var(--chain)", v: [1.95, 1.80, 2.08, 1.80], nfe: [92.2, 84.7, 87.0, 100.5] },
+    { name: "BlockSpec tree", c: "var(--blockspec)", v: [1.33, 1.10, 1.34, 1.29], nfe: [136.4, 135.0, 136.0, 136.7] }
+  ];
+  var FREE_NFE = [270.8, 269.2, 271.4, 271.8];
+  var svg = document.getElementById("chart"), NS = "http://www.w3.org/2000/svg";
+  var W = 860, left = 128, right = 40, barH = 13, gapB = 3, groupGap = 22, top = 34;
+  var groupH = METHODS.length * (barH + gapB) - gapB;
+  var H = top + TASKS.length * (groupH + groupGap) + 18;
+  var xmax = 3.5, x = function (v) { return left + (W - left - right) * v / xmax; };
+  function s(tag, attrs, txt) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (txt != null) e.textContent = txt; svg.appendChild(e); return e; }
+  [0, 1, 2, 3].forEach(function (v) {
+    s("line", { x1: x(v), x2: x(v), y1: top - 8, y2: H - 18, "class": v === 1 ? "base" : "gridline" });
+    s("text", { x: x(v), y: top - 14, "text-anchor": "middle" }, v === 1 ? "1× draft-free" : v + "×");
+  });
+  TASKS.forEach(function (t, ti) {
+    var y0 = top + ti * (groupH + groupGap);
+    s("text", { x: 0, y: y0 + groupH / 2 + 4, "class": "task" }, t);
+    METHODS.forEach(function (m, mi) {
+      var y = y0 + mi * (barH + gapB);
+      var r = s("rect", { x: x(0), y: y, width: Math.max(1, x(m.v[ti]) - x(0)), height: barH, rx: 2 });
+      r.style.fill = m.c;
+      s("text", { x: x(m.v[ti]) + 5, y: y + barH - 2.5, "class": "val" }, m.v[ti].toFixed(2) + "×");
+    });
+  });
+  METHODS.forEach(function (m, mi) {
+    var gx = left + mi * 140;
+    var r = s("rect", { x: gx, y: H - 12, width: 10, height: 10, rx: 2 }); r.style.fill = m.c;
+    s("text", { x: gx + 15, y: H - 3 }, m.name);
+  });
+  svg.setAttribute("viewBox", "0 0 " + W + " " + (H + 6));
+
+  var body = document.getElementById("nfe-body");
+  [{ name: "Draft-free", nfe: FREE_NFE }].concat(METHODS).forEach(function (m) {
+    var tr = el("tr", m.ours ? "ours" : null);
+    tr.appendChild(el("td", null, m.name));
+    m.nfe.forEach(function (v, i) {
+      var td = el("td", null, v.toFixed(1));
+      if (m.name !== "Draft-free") td.appendChild(el("span", "x", (FREE_NFE[i] / v).toFixed(1) + "× fewer"));
+      tr.appendChild(td);
+    });
+    body.appendChild(tr);
+  });
+
+  function copyText(txt, btn, label, done) {
+    function ok() { btn.textContent = done; setTimeout(function () { btn.textContent = label; }, 1600); }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok, function () { btn.textContent = "Copy failed"; });
+    else btn.textContent = "Copy failed";
+  }
+  var copyBtn = document.getElementById("copy-bib");
+  copyBtn.addEventListener("click", function () { copyText(document.getElementById("bib").textContent, copyBtn, "Copy BibTeX", "Copied"); });
+  var shareLabel = document.getElementById("share-label");
+  document.getElementById("share").addEventListener("click", function () { copyText(location.href.split("#")[0], shareLabel, "Share this page", "Link copied"); });
+})();
+</script>
