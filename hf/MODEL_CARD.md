@@ -25,7 +25,7 @@ Eliezer Shlomi<sup>1,2\*</sup>, Eliron Rahimi<sup>1,2\*</sup>, Avi Mendelson<sup
 <sub><sup>\*</sup>Equal contribution. Correspondence: {eliezer, elironrahimi}@campus.technion.ac.il</sub>
 
 [![Project page](https://img.shields.io/badge/Project-page-1D4ED8)](https://eliezer318.github.io/SPOT-dLLM/)
-[![Paper](https://img.shields.io/badge/Paper-coming%20soon-lightgrey)](#citation)
+[![arXiv](https://img.shields.io/badge/arXiv-2610.22543-B31B1B)](https://arxiv.org/abs/2610.22543)
 [![Code](https://img.shields.io/badge/GitHub-SPOT--dLLM-181717?logo=github)](https://github.com/Eliezer318/SPOT-dLLM)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Eliezer318/SPOT-dLLM/blob/main/colab/spot_quickstart.ipynb)
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/Eliezer318/SPOT-dLLM/blob/main/LICENSE)
@@ -41,6 +41,7 @@ commits next. SPOT grows those predictions into a tree of candidate block states
 whole tree in one forward, exactly: an accepted state equals the target's own next state, and
 coupled-noise match keeps this exact at any temperature. On SDAR-8B this cuts target passes by up to 6.8× and
 reaches up to 3.2× the throughput of standard decoding, with the target's output unchanged.
+Paper: [arXiv:2610.22543](https://arxiv.org/abs/2610.22543).
 
 ## Files
 
@@ -55,6 +56,31 @@ reaches up to 3.2× the throughput of standard decoding, with the target's outpu
 
 `tuned/` holds the per-setting comparison drafters of the paper's appendix; the six checkpoints above are all you need to use SPOT.
 A drafter can also drive other targets directly; LLaDA-8B and Dream-7B run with transferred drafters.
+
+## Results
+
+SDAR-8B, block width 32, generation length 256, draft budget 8, T = 0: throughput ratio over draft-free
+decoding (1.00), mean of three seeds (Table 2 of the paper).
+
+| Task | Spiffy graph | SPOT | SPOT-γ |
+|---|---|---|---|
+| GSM8K | 1.96 | 2.50 | **2.76** |
+| MBPP | 1.86 | 2.61 | **2.98** |
+| HumanEval | 2.11 | 2.74 | **3.09** |
+| MATH500 | 1.80 | 2.03 | **2.27** |
+
+At budget 20, SPOT needs 4.1–6.8× fewer target forwards than draft-free decoding on SDAR-8B. At T = 1 it uses
+15–34% fewer forwards than Spiffy at 1.15–1.48× its throughput.
+
+## Limitations
+
+- Gains shrink when verification is costly or acceptance is low: at wide blocks, on low-acceptance tasks, and at
+  T ≥ 2, where noise-aware ranking beats the order model trained at T = 0.
+- On SDAR-1.7B, where a target forward is cheap, Spiffy has the higher throughput in three columns at T = 0 and
+  two at T = 1, with one tie.
+- LLaDA-8B and Dream-7B run with an approximate prefix cache, so those results measure reach; losslessness is
+  shown on the exact-cache targets.
+- Exact tree packing under bidirectional attention remains open.
 
 ## Use
 
@@ -74,10 +100,15 @@ python run_sweep.py --model sdar --block-length 32 --gen-length 256 --task gsm8k
 ## Citation
 
 ```bibtex
-@misc{shlomi2026spot,
-  title  = {{On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction}},
-  author = {Eliezer Shlomi and Eliron Rahimi and Avi Mendelson and Chaim Baskin},
-  year   = {2026},
-  url    = {https://github.com/Eliezer318/SPOT-dLLM}
+@article{shlomi2026spot,
+  title         = {On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction},
+  author        = {Shlomi, Eliezer and Rahimi, Eliron and Mendelson, Avi and Baskin, Chaim},
+  journal       = {arXiv preprint arXiv:2610.22543},
+  year          = {2026},
+  doi           = {10.48550/arXiv.2610.22543},
+  eprint        = {2610.22543},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url           = {https://arxiv.org/abs/2610.22543}
 }
 ```

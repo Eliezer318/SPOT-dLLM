@@ -12,6 +12,14 @@ page = open(os.path.join(D, "src", "page.html"), encoding="utf-8").read()
 data = json.dumps(json.load(open(os.path.join(D, "assets", "traces.json"))), separators=(",", ":"), ensure_ascii=False)
 page = page.replace("/*__TRACES__*/", data.replace("</", "<\\/"))
 head, body = page.split("<!--BODY-->", 1)
+# FAQPage structured data from the Questions section's own text, so the two never drift apart
+import html, re
+sec = re.search(r'<section[^>]*id="questions">(.*?)</section>', body, re.S).group(1)
+text = lambda h: html.unescape(re.sub(r"<[^>]+>", "", h)).strip()
+faq = [{"@type": "Question", "name": text(q), "acceptedAnswer": {"@type": "Answer", "text": text(a)}}
+       for q, a in re.findall(r"<h3>(.*?)</h3>\s*<p>(.*?)</p>", sec, re.S) if text(q).endswith("?")]
+faq = json.dumps({"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": faq}, ensure_ascii=False, indent=1)
+head += '<script type="application/ld+json">\n' + faq.replace("</", "<\\/") + "\n</script>\n"
 if "--fragment" in sys.argv:
     out = sys.argv[sys.argv.index("--fragment") + 1]
     # previews keep a short tab title; the published page carries the full paper title

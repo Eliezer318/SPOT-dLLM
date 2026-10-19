@@ -16,7 +16,7 @@
 <sub><sup>\*</sup>Equal contribution. Correspondence: {eliezer, elironrahimi}@campus.technion.ac.il</sub>
 
 [![Project page](https://img.shields.io/badge/Project-page-1D4ED8)](https://eliezer318.github.io/SPOT-dLLM/)
-[![Paper](https://img.shields.io/badge/Paper-coming%20soon-lightgrey)](#citation)
+[![arXiv](https://img.shields.io/badge/arXiv-2610.22543-B31B1B)](https://arxiv.org/abs/2610.22543)
 [![Drafters](https://img.shields.io/badge/%F0%9F%A4%97%20Drafters-SPOT--dLLM-FFD21E)](https://huggingface.co/EliezerS/SPOT-dLLM)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Eliezer318/SPOT-dLLM/blob/main/colab/spot_quickstart.ipynb)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
@@ -248,11 +248,16 @@ draft-free run.
 ## Citation
 
 ```bibtex
-@misc{shlomi2026spot,
-  title  = {{On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction}},
-  author = {Eliezer Shlomi and Eliron Rahimi and Avi Mendelson and Chaim Baskin},
-  year   = {2026},
-  url    = {https://github.com/Eliezer318/SPOT-dLLM}
+@article{shlomi2026spot,
+  title         = {On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction},
+  author        = {Shlomi, Eliezer and Rahimi, Eliron and Mendelson, Avi and Baskin, Chaim},
+  journal       = {arXiv preprint arXiv:2610.22543},
+  year          = {2026},
+  doi           = {10.48550/arXiv.2610.22543},
+  eprint        = {2610.22543},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url           = {https://arxiv.org/abs/2610.22543}
 }
 ```
 

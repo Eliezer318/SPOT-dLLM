@@ -19,8 +19,11 @@
 <meta name="citation_author_institution" content="Technion – Israel Institute of Technology">
 <meta name="citation_author" content="Baskin, Chaim">
 <meta name="citation_author_institution" content="INSIGHT Lab, School of Electrical and Computer Engineering, Ben-Gurion University of the Negev">
-<meta name="citation_publication_date" content="2026">
+<meta name="citation_publication_date" content="2026/10/15">
+<meta name="citation_arxiv_id" content="2610.22543">
+<meta name="citation_pdf_url" content="https://arxiv.org/pdf/2610.22543">
 <meta name="citation_language" content="en">
+<meta name="citation_abstract_html_url" content="https://eliezer318.github.io/SPOT-dLLM/">
 <meta name="citation_keywords" content="speculative decoding; diffusion language models; block diffusion; commit order; drafter; lossless acceleration; SDAR; LLaDA; Dream">
 <!-- Open Graph and Twitter cards -->
 <meta property="og:type" content="article">
@@ -165,7 +168,13 @@
      "name": "NFE and throughput ratio",
      "description": "Target forward passes per sample, and throughput relative to the draft-free run of the same task, model and temperature (Section 5.1)."
     }
-   ]
+   ],
+   "identifier": "arXiv:2610.22543",
+   "sameAs": [
+    "https://arxiv.org/abs/2610.22543",
+    "https://doi.org/10.48550/arXiv.2610.22543"
+   ],
+   "datePublished": "2026-10-15"
   },
   {
    "@type": "SoftwareSourceCode",
@@ -190,7 +199,7 @@
  ]
 }
 </script>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231d4ed8'/%3E%3Crect x='6' y='6' width='8' height='8' rx='1.5' fill='%23ffffff'/%3E%3Crect x='18' y='6' width='8' height='8' rx='1.5' fill='%2393b4ff'/%3E%3Crect x='6' y='18' width='8' height='8' rx='1.5' fill='%2393b4ff'/%3E%3Crect x='18' y='18' width='8' height='8' rx='1.5' fill='%2393b4ff'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%231d4ed8'/%3E%3Crect%20x='6'%20y='6'%20width='8'%20height='8'%20rx='1.5'%20fill='%23ffffff'/%3E%3Crect%20x='18'%20y='6'%20width='8'%20height='8'%20rx='1.5'%20fill='%2393b4ff'/%3E%3Crect%20x='6'%20y='18'%20width='8'%20height='8'%20rx='1.5'%20fill='%2393b4ff'/%3E%3Crect%20x='18'%20y='18'%20width='8'%20height='8'%20rx='1.5'%20fill='%2393b4ff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -272,13 +281,13 @@ p, h1, h2, h3, h4, figure { margin: 0; }
 .nav-links a.nl { color: var(--muted); text-decoration: none; font-size: 15px; }
 .nav-links a.nl:hover { color: var(--accent); }
 .nav-cta { font-size: 12px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent-line); border-radius: 6px; padding: 10px 16px; text-decoration: none; white-space: nowrap; }
-.nav-cta[aria-disabled="true"] { cursor: default; }
-.nav-cta .soon { color: var(--faint); letter-spacing: 0.08em; }
 @media (max-width: 960px) { .nav-links a.nl { display: none; } }
 
 /* header */
 .article-header { max-width: var(--page-w); margin: 0 auto; padding: 56px var(--gutter) 40px; display: grid; justify-items: center; text-align: center; gap: 24px; }
 .meta { color: var(--faint); font-size: 15px; letter-spacing: 0.01em; }
+.meta a { color: var(--accent); text-decoration: none; }
+.meta a:hover { text-decoration: underline; }
 .title { font-family: var(--font-display); font-weight: 600; font-size: clamp(31px, 3.6vw, 50px); line-height: 1.15; letter-spacing: -0.02em; color: var(--ink); max-width: 940px; text-wrap: balance; }
 .dek { font-family: var(--font-display); font-weight: 500; font-size: clamp(18px, 1.6vw, 21px); line-height: 1.45; color: var(--ink); max-width: 800px; text-wrap: pretty; }
 .value-points { list-style: none; margin: 0; padding: 0; max-width: 780px; display: grid; gap: 14px; text-align: left; }
@@ -308,9 +317,6 @@ p, h1, h2, h3, h4, figure { margin: 0; }
 .btn-pill.is-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .btn-pill.is-primary:hover { filter: brightness(1.06); }
 .btn-pill.is-dark { background: var(--dark); border-color: var(--dark); color: var(--dark-ink); }
-.btn-pill[aria-disabled="true"] { cursor: default; color: var(--faint); }
-.btn-pill[aria-disabled="true"]:hover { border-color: var(--line); }
-.btn-pill .soon { font-size: 12.5px; color: var(--faint); }
 
 /* cover: recorded runs */
 .cover { max-width: 1040px; margin: 8px auto 0; padding: 0 var(--gutter); }
@@ -438,10 +444,10 @@ ol.steps b { color: var(--ink); font-weight: 600; }
 .flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; margin-top: 30px; }
 .flow-step { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 18px; }
 .flow-num { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 4px; background: var(--accent); color: var(--accent-ink); font-size: 12px; font-weight: 600; }
-.flow-step h4 { font-size: 16px; font-weight: 500; color: var(--ink); margin-top: 12px; }
+.flow-step h3 { font-family: inherit; font-size: 16px; font-weight: 500; line-height: inherit; color: var(--ink); margin-top: 12px; }
 .flow-step p { font-size: 14px; color: var(--muted); line-height: 1.55; margin-top: 8px; }
 .flow-step.is-accent { background: var(--dark); border-color: var(--dark); }
-.flow-step.is-accent h4, .flow-step.is-accent p { color: var(--dark-ink); }
+.flow-step.is-accent h3, .flow-step.is-accent p { color: var(--dark-ink); }
 .flow-step.is-accent .flow-num { background: var(--dark-ink); color: var(--dark); }
 .flow-step:not(:last-child)::after { content: "\2192"; position: absolute; right: -17px; top: 44%; color: var(--accent); font-size: 16px; }
 @media (max-width: 860px) { .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); } .flow-step::after { display: none; } }
@@ -460,7 +466,6 @@ dl.terms dd { margin: 0; color: var(--body); font-size: 15px; line-height: 1.6; 
 .quick { display: grid; gap: 2px; margin-top: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
 .quick a, .quick button { display: flex; gap: 10px; align-items: center; color: var(--text); text-decoration: none; padding: 7px 0; font: 400 16px var(--font-body); background: none; border: 0; cursor: pointer; text-align: left; }
 .quick a:hover, .quick button:hover, .toc a:hover { color: var(--accent); }
-.quick .off { color: var(--faint); cursor: default; }
 .share { margin-top: 10px; }
 .toc { display: grid; gap: 2px; margin-top: 18px; }
 .toc a { display: flex; gap: 12px; align-items: baseline; color: var(--text); text-decoration: none; padding: 5px 0; font-size: 15px; }
@@ -497,7 +502,6 @@ dl.terms dd { margin: 0; color: var(--body); font-size: 15px; line-height: 1.6; 
 .foot-title { font-family: var(--font-display); font-weight: 600; font-size: 19px; color: var(--ink); text-wrap: balance; }
 .foot-links { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 14px; font-size: 15px; }
 .foot-links a { text-decoration: none; }
-.foot-links .off { color: var(--faint); }
 .foot-bottom { border-top: 1px solid var(--line); }
 .foot-bottom p { max-width: var(--page-w); margin: 0 auto; padding: 18px var(--gutter) 30px; font-size: 13px; color: var(--faint); line-height: 1.6; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .cell, .tk, .logo-btn { transition: none; } }
@@ -514,13 +518,13 @@ dl.terms dd { margin: 0; color: var(--body); font-size: 15px; line-height: 1.6; 
       <a class="nl" href="#details">Details</a>
       <a class="nl" href="#questions">Questions</a>
       <a class="nl" href="#bibtex">BibTeX</a>
-      <span class="nav-cta" aria-disabled="true" data-todo="arxiv">arXiv <span class="soon">soon</span></span>
+      <a class="nav-cta" href="https://arxiv.org/abs/2610.22543" target="_blank" rel="noopener">arXiv</a>
     </div>
   </div>
 </nav>
 
 <header class="article-header" id="top">
-  <p class="meta">Preprint · 2026</p>
+  <p class="meta">Preprint · <a href="https://arxiv.org/abs/2610.22543" target="_blank" rel="noopener">arXiv:2610.22543</a> · 2026</p>
   <h1 class="title">On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via <span class="nowrap">Commit-Order</span> Prediction</h1>
   <p class="dek">SPOT predicts where a diffusion language model commits next, so the model verifies several future steps in one pass, with its exact output distribution.</p>
   <ul class="value-points">
@@ -548,7 +552,7 @@ dl.terms dd { margin: 0; color: var(--body); font-size: 15px; line-height: 1.6; 
     <a class="btn-pill is-primary" href="https://github.com/Eliezer318/SPOT-dLLM" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Code</a>
     <a class="btn-pill" href="https://colab.research.google.com/github/Eliezer318/SPOT-dLLM/blob/main/colab/spot_quickstart.ipynb" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m10 8.5 5 3.5-5 3.5z"/></svg>Open in Colab</a>
     <a class="btn-pill" href="https://huggingface.co/EliezerS/SPOT-dLLM" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.4 2.2 2 3.5 2s2.5-.6 3.5-2"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>Drafters</a>
-    <span class="btn-pill" aria-disabled="true" data-todo="arxiv"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>Paper <span class="soon">soon</span></span>
+    <a class="btn-pill" href="https://arxiv.org/abs/2610.22543" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>Paper</a>
     <a class="btn-pill" href="#bibtex"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 10h16M4 14h10M4 18h7"/></svg>BibTeX</a>
   </div>
 </header>
@@ -679,7 +683,7 @@ huggingface-cli download EliezerS/SPOT-dLLM --local-dir drafters
   --layout concat --cache on --unmasking single --suffix skip --pad-pieces -1 \
   --draft slot --slot-mode ddtree_b --slot-ckpt drafters/sdar8b_b32.pt --slot-tokgate 0.6 \
   --budgets 0,8,20 --seeds 0 --out-root runs/sdar8b/mbpp/spot</pre>
-          <div class="chips" aria-label="Supported targets">
+          <div class="chips" role="group" aria-label="Supported targets">
             <span class="chip" title="native drafter"><i></i>SDAR-8B</span>
             <span class="chip" title="native drafter"><i></i>SDAR-4B</span>
             <span class="chip" title="native drafter"><i></i>SDAR-1.7B</span>
@@ -702,10 +706,10 @@ huggingface-cli download EliezerS/SPOT-dLLM --local-dir drafters
       </figure>
       <p>The previous pass already names the right token at 92–100% of positions, so SPOT spends its capacity on the order: it predicts the next position after each hypothetical commitment and keeps a second token candidate where the model is unsure.</p>
       <div class="flow">
-        <div class="flow-step"><span class="flow-num">1</span><h4>Read the stale table</h4><p>The top-32 distribution at each masked position, from the last pass.</p></div>
-        <div class="flow-step"><span class="flow-num">2</span><h4>Predict the order</h4><p>A 0.62M-parameter model scores the next position, given the branch so far.</p></div>
-        <div class="flow-step"><span class="flow-num">3</span><h4>Grow a tree</h4><p>Branches expand best first by prefix mass, up to the budget.</p></div>
-        <div class="flow-step is-accent"><span class="flow-num">4</span><h4>Verify once</h4><p>One batched pass checks every state and accepts the deepest one that matches the model's own step.</p></div>
+        <div class="flow-step"><span class="flow-num">1</span><h3>Read the stale table</h3><p>The top-32 distribution at each masked position, from the last pass.</p></div>
+        <div class="flow-step"><span class="flow-num">2</span><h3>Predict the order</h3><p>A 0.62M-parameter model scores the next position, given the branch so far.</p></div>
+        <div class="flow-step"><span class="flow-num">3</span><h3>Grow a tree</h3><p>Branches expand best first by prefix mass, up to the budget.</p></div>
+        <div class="flow-step is-accent"><span class="flow-num">4</span><h3>Verify once</h3><p>One batched pass checks every state and accepts the deepest one that matches the model's own step.</p></div>
       </div>
       <div class="callout"><span class="eyebrow">What you learn</span><p>Knowing the future position order is almost as good as knowing the full draft trajectory.</p></div>
     </section>
@@ -724,7 +728,7 @@ huggingface-cli download EliezerS/SPOT-dLLM --local-dir drafters
       <p>Swapped checkpoints, tokenizers included: the LLaDA2.0-mini checkpoint needs 3–7% more passes on SDAR-8B and still beats every baseline. On LLaDA-8B and Dream-7B, new to every checkpoint, SPOT cuts 256 passes to 55–88 and 51–79; both use an approximate prefix cache, so these rows show reach, and exactness is shown on the other four models.</p>
       <h3>Where the gains shrink.</h3>
       <p>Gains shrink when verification is costly or acceptance is low: at wide blocks, on low-acceptance tasks, and at T ≥ 2, where noise-aware ranking beats the order model trained at T = 0. Exact tree packing under bidirectional attention remains open.</p>
-      <div class="btn-row"><span class="btn-pill" aria-disabled="true" data-todo="arxiv">Read the paper <span class="soon">soon</span></span></div>
+      <div class="btn-row"><a class="btn-pill" href="https://arxiv.org/abs/2610.22543" target="_blank" rel="noopener">Read the paper</a></div>
     </section>
 
     <section class="text-block" id="questions">
@@ -770,7 +774,7 @@ huggingface-cli download EliezerS/SPOT-dLLM --local-dir drafters
       <a href="https://github.com/Eliezer318/SPOT-dLLM" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Code</a>
       <a href="https://colab.research.google.com/github/Eliezer318/SPOT-dLLM/blob/main/colab/spot_quickstart.ipynb" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m10 8.5 5 3.5-5 3.5z"/></svg>Colab demo</a>
       <a href="https://huggingface.co/EliezerS/SPOT-dLLM" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.4 2.2 2 3.5 2s2.5-.6 3.5-2"/><path d="M9 9.5h.01M15 9.5h.01"/></svg>Drafters</a>
-      <span class="off" data-todo="arxiv" style="display:flex;gap:10px;align-items:center;padding:7px 0"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>Paper (soon)</span>
+      <a href="https://arxiv.org/abs/2610.22543" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>Paper</a>
       <a href="#bibtex"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 10h16M4 14h10M4 18h7"/></svg>BibTeX</a>
     </div>
     <div class="quick share"><button type="button" id="share"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg><span id="share-label">Share this page</span></button></div>
@@ -788,14 +792,19 @@ huggingface-cli download EliezerS/SPOT-dLLM --local-dir drafters
   <h2>Cite this work.</h2>
   <div class="bib">
     <button type="button" class="btn-pill copy" id="copy-bib">Copy BibTeX</button>
-    <pre id="bib">@misc{shlomi2026spot,
-  title  = {{On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction}},
-  author = {Eliezer Shlomi and Eliron Rahimi and Avi Mendelson and Chaim Baskin},
-  year   = {2026},
-  url    = {https://github.com/Eliezer318/SPOT-dLLM}
+    <pre id="bib">@article{shlomi2026spot,
+  title         = {On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction},
+  author        = {Shlomi, Eliezer and Rahimi, Eliron and Mendelson, Avi and Baskin, Chaim},
+  journal       = {arXiv preprint arXiv:2610.22543},
+  year          = {2026},
+  doi           = {10.48550/arXiv.2610.22543},
+  eprint        = {2610.22543},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url           = {https://arxiv.org/abs/2610.22543}
 }</pre>
   </div>
-  <p class="cite-note">Questions or issues: <a href="https://github.com/Eliezer318/SPOT-dLLM/issues" target="_blank" rel="noopener">open an issue on GitHub</a>.</p>
+  <p class="cite-note">Also as <a href="cite.ris" download>RIS</a> or <a href="cite.json" download>CSL-JSON</a>. Questions or issues: <a href="https://github.com/Eliezer318/SPOT-dLLM/issues" target="_blank" rel="noopener">open an issue on GitHub</a>.</p>
 </section>
 
 <section class="affil-panel" aria-label="Affiliations and acknowledgements">
@@ -820,7 +829,7 @@ huggingface-cli download EliezerS/SPOT-dLLM --local-dir drafters
         <li>Co-author of this work; contact <a href="mailto:chaimbaskin@bgu.ac.il">chaimbaskin@bgu.ac.il</a></li>
         <li>Co-authors from the Technion and the INSIGHT Lab at Ben-Gurion University of the Negev</li>
       </ul>
-      <div class="affil-logos" aria-label="Lab logos">
+      <div class="affil-logos" role="group" aria-label="Lab logos">
         <span><img src="assets/logos/technion-wide.svg" alt="Technion – Israel Institute of Technology"></span>
         <span><img src="assets/logos/insight-wide.png" alt="INSIGHT Lab, Ben-Gurion University of the Negev" width="1400" height="253"></span>
       </div>
@@ -836,7 +845,7 @@ huggingface-cli download EliezerS/SPOT-dLLM --local-dir drafters
       <a href="https://colab.research.google.com/github/Eliezer318/SPOT-dLLM/blob/main/colab/spot_quickstart.ipynb" target="_blank" rel="noopener">Colab notebook</a>
       <a href="https://huggingface.co/EliezerS/SPOT-dLLM" target="_blank" rel="noopener">Drafters</a>
       <a href="#bibtex">BibTeX</a>
-      <span class="off" data-todo="arxiv">Paper (soon)</span>
+      <a href="https://arxiv.org/abs/2610.22543" target="_blank" rel="noopener">Paper</a>
     </div>
   </div>
   <div class="foot-bottom"><p>Project page for <i>On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction</i>. Replays use logged runs from the paper's SDAR-8B benchmark; the chart and table show the paper's numbers.</p></div>

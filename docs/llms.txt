@@ -44,10 +44,11 @@ SDAR-8B at block width 32, SDAR-4B, SDAR-1.7B and LLaDA2.0-mini, with transfer t
 - Section 3: why commit order is the drafting bottleneck.
 - Section 4: the drafter and coupled-noise verification; Appendix A: the exactness proofs.
 - Section 5: main results, temperature, transfer and ablations; Appendix F: extended results.
+- Appendix H: terms, common questions and released resources.
 
 ## Publication status
 
-Preprint.
+Preprint on arXiv (2610.22543, 2026-10-15).
 
 ## Questions and answers
 
@@ -93,6 +94,7 @@ The code, the trained drafters and the instructions to reproduce the experiments
 
 ## Links
 
+- [Paper on arXiv](https://arxiv.org/abs/2610.22543): the full paper
 - [Project page](https://eliezer318.github.io/SPOT-dLLM/): overview, results and citation
 - [Code](https://github.com/Eliezer318/SPOT-dLLM): The decoder, the coupled-noise verifier, drafter training and the trained drafters; MIT licence.
 - [Drafters](https://huggingface.co/EliezerS/SPOT-dLLM): The trained 0.62M-parameter commit-order drafters, one per target and block width.
@@ -106,9 +108,14 @@ SPOT speeds up diffusion language models losslessly. A 0.62M-parameter drafter p
 
 ```bibtex
 @article{shlomi2026spot,
-  title   = {On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction},
-  author  = {Shlomi, Eliezer and Rahimi, Eliron and Mendelson, Avi and Baskin, Chaim},
-  journal = {arXiv preprint},
-  year    = {2026}
+  title         = {On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction},
+  author        = {Shlomi, Eliezer and Rahimi, Eliron and Mendelson, Avi and Baskin, Chaim},
+  journal       = {arXiv preprint arXiv:2610.22543},
+  year          = {2026},
+  doi           = {10.48550/arXiv.2610.22543},
+  eprint        = {2610.22543},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url           = {https://arxiv.org/abs/2610.22543}
 }
 ```

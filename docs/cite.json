@@ -1,0 +1,38 @@
+[
+ {
+  "id": "shlomi2026spot",
+  "type": "article",
+  "title": "On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction",
+  "author": [
+   {
+    "family": "Shlomi",
+    "given": "Eliezer"
+   },
+   {
+    "family": "Rahimi",
+    "given": "Eliron"
+   },
+   {
+    "family": "Mendelson",
+    "given": "Avi"
+   },
+   {
+    "family": "Baskin",
+    "given": "Chaim"
+   }
+  ],
+  "issued": {
+   "date-parts": [
+    [
+     2026,
+     10,
+     15
+    ]
+   ]
+  },
+  "publisher": "arXiv",
+  "number": "arXiv:2610.22543",
+  "DOI": "10.48550/arXiv.2610.22543",
+  "URL": "https://arxiv.org/abs/2610.22543"
+ }
+]
