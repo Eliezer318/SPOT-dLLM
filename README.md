@@ -249,7 +249,7 @@ draft-free run.
 
 ```bibtex
 @article{shlomi2026spot,
-  title         = {On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction},
+  title         = {On the {SPOT}: Enhancing Speculative Decoding for Diffusion Language Models via Commit-Order Prediction},
   author        = {Shlomi, Eliezer and Rahimi, Eliron and Mendelson, Avi and Baskin, Chaim},
   journal       = {arXiv preprint arXiv:2610.22543},
   year          = {2026},
