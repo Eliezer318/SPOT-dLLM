@@ -40,8 +40,8 @@ The <a href="https://eliezer318.github.io/SPOT-dLLM/">project page</a> has an in
 
 ## 📰 News
 
-- **2026-10** · Paper v2 adds **SPOT-Sets** for dynamic threshold decoding: code in `spot/sets.py`, its SDAR-8B
-  drafter on [🤗 SPOT-dLLM](https://huggingface.co/EliezerS/SPOT-dLLM) (`sets/sdar8b_b32.pt`).
+- **2026-10** · Paper v2 adds **SPOT-Sets** for dynamic threshold decoding: code in `spot/sets.py`, its drafters
+  for SDAR-8B, SDAR-4B, LLaDA2.0-mini, LLaDA-8B and Dream-7B on [🤗 SPOT-dLLM](https://huggingface.co/EliezerS/SPOT-dLLM) (`sets/`).
 - **2026-10** · Code, the drafter checkpoints ([🤗 SPOT-dLLM](https://huggingface.co/EliezerS/SPOT-dLLM)) and the
   [project page](https://eliezer318.github.io/SPOT-dLLM/) are being prepared for release.
 
@@ -158,7 +158,8 @@ python run_sweep.py --model sdar --block-length 32 --gen-length 256 \
 
 `--sets-accept exact` keeps the threshold decoder's output; `product`, `subset` and `cut` are the max-commit rules,
 from loosest to strictest. `--cross-block on` lets a draft that completes the block carry the next one, and the
-next block's first forward verify drafts too.
+next block's first forward verify drafts too. For another target, pass its `--model` and its `--sets-ckpt` from
+the [SPOT-Sets table](#drafter-checkpoints).
 
 <a id="drafter-checkpoints"></a>
 
@@ -191,9 +192,16 @@ tuned separately for one target and width, same architecture): `sdar8b_b32`,
 The SDAR-4B, SDAR-1.7B and SDAR-8B-b16 targets are read from the local snapshot cache;
 download them first, e.g. `huggingface-cli download JetLM/SDAR-4B-Chat-b32`.
 
-The SPOT-Sets drafter, `sets/sdar8b_b32.pt` (SDAR-8B-Chat-b32, threshold 0.9), is on Hugging Face only and is
-fetched on first use: the set drafter's weights together with the target's token-embedding PCA and hidden-state
-basis it reads.
+The SPOT-Sets drafters (threshold 0.9, block 32) are on Hugging Face only and are fetched on first use. Each file
+holds the set drafter's weights together with the target's token-embedding PCA and hidden-state basis it reads.
+
+| `--sets-ckpt` | target | `--model` | drafter |
+|---|---|---|---|
+| `drafters/sets/sdar8b_b32.pt` | SDAR-8B-Chat-b32 | `sdar` | trained on general chat |
+| `drafters/sets/sdar4b_b32.pt` | SDAR-4B-Chat-b32 | `sdar4b` | trained on general chat |
+| `drafters/sets/llada2mini_b32.pt` | LLaDA2.0-mini | `llada2` | trained on general chat |
+| `drafters/sets/llada8b_b32.pt` | LLaDA-8B-Instruct | `llada` | the SDAR-8B drafter, calibrated on 98 target prompts |
+| `drafters/sets/dream_b32.pt` | Dream-v0-Instruct-7B | `dream` | the SDAR-8B drafter, calibrated on 98 target prompts |
 
 The same checkpoints, with a model card, are on Hugging Face at [🤗 EliezerS/SPOT-dLLM](https://huggingface.co/EliezerS/SPOT-dLLM):
 

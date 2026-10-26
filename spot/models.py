@@ -178,18 +178,21 @@ class LLaDAAdapter(BaseAdapter):
         self.eos_id = int(cfg.eos_token_id)
         self.dtype = dtype
 
-    def forward(self, input_ids, position_ids, attn_bias, past, use_cache):
+    def forward(self, input_ids, position_ids, attn_bias, past, use_cache,
+                want_hidden: bool = False):
         out = self.model(
             input_ids=input_ids,
             position_ids=position_ids,
             attention_bias=attn_bias,
             past_key_values=past,
-            use_cache=use_cache)
+            use_cache=use_cache,
+            output_hidden_states=want_hidden)
         return ForwardOut(
             logits=out.logits,  # left in the model dtype; block_probs upcasts the rows it needs
             past=out.past_key_values if use_cache else None,
             n_positions=int(input_ids.shape[1]),
-            key_len=int(input_ids.shape[1] + (self.cache_len(past) if past is not None else 0)))
+            key_len=int(input_ids.shape[1] + (self.cache_len(past) if past is not None else 0)),
+            hidden=(out.hidden_states[-1] if want_hidden else None))
 
     def trim_cache(self, past, length):
         return [(k[:, :, :length, :], v[:, :, :length, :]) for (k, v) in past]
@@ -223,7 +226,8 @@ class DreamAdapter(BaseAdapter):
         self.eos_id = int(self.model.config.eos_token_id)
         self.dtype = dtype
 
-    def forward(self, input_ids, position_ids, attn_bias, past, use_cache):
+    def forward(self, input_ids, position_ids, attn_bias, past, use_cache,
+                want_hidden: bool = False):
         from transformers.cache_utils import DynamicCache
 
         q_len = int(input_ids.shape[1])
@@ -245,7 +249,8 @@ class DreamAdapter(BaseAdapter):
             attention_mask=attn_bias,
             past_key_values=cache,
             use_cache=cache is not None,
-            cache_position=torch.arange(past_len, past_len + q_len, device=input_ids.device))
+            cache_position=torch.arange(past_len, past_len + q_len, device=input_ids.device),
+            output_hidden_states=want_hidden)
         # DreamAttention appends to whatever cache it is handed, so a read-only forward has to
         # roll the cache back to the prefix it was called with.
         if past is not None and not use_cache:
@@ -254,7 +259,8 @@ class DreamAdapter(BaseAdapter):
             logits=out.logits,
             past=cache if use_cache else None,
             n_positions=q_len,
-            key_len=q_len + past_len)
+            key_len=q_len + past_len,
+            hidden=(out.hidden_states[-1] if want_hidden else None))
 
     def trim_cache(self, past, length):
         return DreamCacheOps.trim(past, length)

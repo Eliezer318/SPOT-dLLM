@@ -36,6 +36,10 @@ _ORIG = """        if attention_mask.size() == (batch_size, 1, seq_length, seq_l
             )
 """
 
+# The same branch in revision dad945cac317 of the checkpoint (formatting changed upstream after the extraction above:
+# the helper call's closing parenthesis is on its own line).  Same code, so the same relaxed branch replaces it.
+_ORIG_B = '        if attention_mask.size() == (batch_size, 1, seq_length, seq_length):\n            attention_mask = _prepare_4d_causal_attention_mask_for_sdpa(\n                attention_mask,\n                (batch_size, seq_length),\n                inputs_embeds,\n                past_seen_tokens,\n            )\n        else:\n            raise ValueError(\n                f"LLaDA2.0 only support block attention mask with shape: {(batch_size, 1, seq_length, seq_length)}, the input attention with shape {attention_mask.size()=}!"\n            )\n'
+
 _PATCHED = """        if attention_mask.size() == (batch_size, 1, seq_length, seq_length):
             attention_mask = _prepare_4d_causal_attention_mask_for_sdpa(
                 attention_mask,
@@ -70,7 +74,8 @@ def attach(model):
         return model
 
     src = inspect.getsource(type(model).forward)
-    if _ORIG not in src:
+    orig = next((o for o in (_ORIG, _ORIG_B) if o in src), None)
+    if orig is None:
         raise UpstreamDrift(
             "modeling_llada2_moe.forward does not contain the expected mask-shape branch; "
             "the vendored patch was extracted against a different revision. Refusing to "
@@ -78,7 +83,7 @@ def attach(model):
         )
 
     # replace BEFORE dedenting: _ORIG is captured at class-body indentation
-    patched = src.replace(_ORIG, _PATCHED, 1)
+    patched = src.replace(orig, _PATCHED, 1)
     # drop decorators (docstring helpers; not needed on the rebound function), then
     # dedent -- getsource returns the method still indented inside its class
     lines = [l for l in patched.splitlines(True) if not l.lstrip().startswith("@")]

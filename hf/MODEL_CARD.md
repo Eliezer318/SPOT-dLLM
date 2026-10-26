@@ -54,12 +54,23 @@ Paper: [arXiv:2610.22543](https://arxiv.org/abs/2610.22543).
 | `llada2mini_b32.pt` | LLaDA2.0-mini | 32 | 0.636 |
 | `llada2mini_b16.pt` | LLaDA2.0-mini | 16 | 0.665 |
 
-`sets/sdar8b_b32.pt` is the **SPOT-Sets** drafter for SDAR-8B-Chat-b32 under dynamic threshold decoding (τ = 0.9):
-a 5.1M-parameter set drafter (6 layers, `d_model` 256) that predicts which positions the next step commits and
-with which tokens, stored with the target's token-embedding PCA and hidden-state basis it reads. It was trained on
-the target's own threshold-decoded trajectories on general chat prompts only (ShareGPT and UltraChat-200K). On
-SDAR-8B at T = 0 it raises throughput over standard decoding to 5.2–9.9× (7.9× on average), 59% above the
-threshold decoder alone (Table 2 of the paper).
+`sets/` holds the **SPOT-Sets** drafters for dynamic threshold decoding (τ = 0.9, block 32):
+
+| file | target | drafter |
+|---|---|---|
+| `sets/sdar8b_b32.pt` | SDAR-8B-Chat-b32 | trained on general chat |
+| `sets/sdar4b_b32.pt` | SDAR-4B-Chat-b32 | trained on general chat |
+| `sets/llada2mini_b32.pt` | LLaDA2.0-mini | trained on general chat |
+| `sets/llada8b_b32.pt` | LLaDA-8B-Instruct | the SDAR-8B drafter, calibrated on 98 target prompts |
+| `sets/dream_b32.pt` | Dream-v0-Instruct-7B | the SDAR-8B drafter, calibrated on 98 target prompts |
+
+Each file is a 5.1M-parameter set drafter (6 layers, `d_model` 256) that predicts which positions the next step
+commits and with which tokens, stored with the target's token-embedding PCA and hidden-state basis it reads. The
+first three were trained on the target's own threshold-decoded trajectories on general chat prompts only (ShareGPT
+and UltraChat-200K). The LLaDA-8B and Dream-7B drafters start from the SDAR-8B one and are calibrated on the
+target's own trajectories for 98 train prompts of GSM8K, MATH, MBPP and CodeAlpaca. On SDAR-8B at T = 0 SPOT-Sets
+raises throughput over standard decoding to 5.2–9.9× (7.9× on average), 59% above the threshold decoder alone
+(Table 2 of the paper).
 
 `tuned/` holds the per-setting comparison drafters of the paper's appendix; the six checkpoints above are all you need to use SPOT.
 A drafter can also drive other targets directly; LLaDA-8B and Dream-7B run with transferred drafters.
@@ -108,6 +119,7 @@ python run_sweep.py --model sdar --block-length 32 --gen-length 256 --task gsm8k
   --temperature 0.0 --layout concat --cache on --unmasking threshold --threshold 0.9 \
   --draft sets --sets-ckpt drafters/sets/sdar8b_b32.pt --sets-accept product --cross-block on \
   --budgets 0,8 --seeds 0 --out-root runs/sdar8b/gsm8k/sets
+# other SPOT-Sets targets: --model sdar4b | llada2 | llada | dream with the matching --sets-ckpt
 ```
 
 ## Citation

@@ -101,7 +101,7 @@ The code, the trained drafters and the instructions to reproduce the experiments
 - [Paper on arXiv](https://arxiv.org/abs/2610.22543): the full paper
 - [Project page](https://eliezer318.github.io/SPOT-dLLM/): overview, results and citation
 - [Code](https://github.com/Eliezer318/SPOT-dLLM): The decoder, the coupled-noise verifier, drafter training and the trained drafters; MIT licence.
-- [Drafters](https://huggingface.co/EliezerS/SPOT-dLLM): The trained 0.62M-parameter commit-order drafters, one per target and block width, and the SPOT-Sets drafter for SDAR-8B.
+- [Drafters](https://huggingface.co/EliezerS/SPOT-dLLM): The trained 0.62M-parameter commit-order drafters, one per target and block width, and the SPOT-Sets drafters for SDAR-8B, SDAR-4B, LLaDA2.0-mini, LLaDA-8B and Dream-7B.
 - [Colab](https://colab.research.google.com/github/Eliezer318/SPOT-dLLM/blob/main/colab/spot_quickstart.ipynb): SDAR-1.7B with its drafter on a free Colab GPU: draft-free decoding against SPOT and SPOT-γ.
 
 ## TL;DR
