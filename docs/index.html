@@ -166,7 +166,7 @@
     {
      "@type": "DefinedTerm",
      "name": "SPOT-γ",
-     "description": "SPOT unpadded with a prefix-mass floor γ, so the verification budget adapts to drafter confidence; γ = 0.1 on SDAR-8B (Section 4.2, Appendix D.5)."
+     "description": "SPOT unpadded with a prefix-mass floor γ, so the verification budget adapts to drafter confidence; calibrated per target, γ = 0.02 on the SDAR targets (Section 4.2, Appendix D.5)."
     },
     {
      "@type": "DefinedTerm",
@@ -553,7 +553,7 @@ dl.terms dd { margin: 0; color: var(--body); font-size: 15px; line-height: 1.6; 
    "name": "How does SPOT differ from Spiffy, SSD and BlockSpec?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "They draft from a calibrated static graph, a confidence-ordered chain or a confidence tree; SPOT learns the commit order. Under one decoder and verifier it uses 15–35% fewer forwards than Spiffy at 1.1–1.5× its throughput on SDAR-8B (Section 5.2)."
+    "text": "They draft from a calibrated static graph, a confidence-ordered chain or a confidence tree; SPOT learns the commit order. Under one decoder and verifier it uses 16–36% fewer forwards than Spiffy at 1.04–1.41× its throughput on SDAR-8B, in every task and budget (Section 5.2)."
    }
   },
   {
@@ -569,7 +569,7 @@ dl.terms dd { margin: 0; color: var(--body); font-size: 15px; line-height: 1.6; 
    "name": "What are the main results?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "On SDAR-8B, 3.2–4.7× fewer forwards than draft-free decoding at budget 8 (4.1–6.8× at budget 20) and 2.0–2.7× the throughput at budget 8; SPOT-γ reaches 3.23× on MBPP at T = 1 with 512 tokens. On SDAR-1.7B, where a forward is cheap, Spiffy leads three throughput columns at T = 0 and two at T = 1, with one tie (Sections 5.2–5.4)."
+    "text": "On SDAR-8B, 3.2–4.7× fewer forwards than draft-free decoding at budget 8 (4.1–6.8× at budget 20) and 2.5–3.4× the throughput at budget 8; at T = 1, 16–35% fewer forwards than Spiffy at 1.08–1.37× its throughput. On top of dynamic threshold decoding, SPOT-Sets reaches 5.2–9.9× the throughput of standard decoding (7.9× on average), against 3.3–6.1× (5.0×) for the threshold decoder alone. SPOT beats or matches every baseline in every setting at both temperatures (Sections 5.2–5.4)."
    }
   },
   {
@@ -577,7 +577,15 @@ dl.terms dd { margin: 0; color: var(--body); font-size: 15px; line-height: 1.6; 
    "name": "Does SPOT work beyond SDAR-8B?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "Yes, across six DLMs: the lowest NFE and highest throughput in every SDAR-4B comparison, and on LLaDA2.0-mini (a different tokenizer) the lowest NFE in all 36 comparisons and the higher throughput in 34. Transferred checkpoints also drive LLaDA-8B and Dream-7B (Section 5.4)."
+    "text": "Yes, across six DLMs: the lowest NFE and highest throughput in every SDAR-4B comparison, and on SDAR-1.7B and LLaDA2.0-mini (a different tokenizer) the lowest NFE in every comparison, beating or matching every baseline in throughput. Transferred checkpoints also drive LLaDA-8B and Dream-7B (Section 5.4)."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "What does SPOT-Sets add, and is it exact?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Faster decoders commit every position whose confidence clears a bar τ, so a drafted step is a whole set of positions with a token for each. SPOT-Sets drafts these sets from the stale distributions, the hidden state and the candidate tokens, and grows a tree whose nodes are whole steps. With exact acceptance the output is the threshold decoder's own, up to floating-point batch effects; max-commit with the product rule commits more per forward and changes the output. On SDAR-8B at T = 0 and budget 8, SPOT-Sets-γ takes 47–48% fewer forwards than the threshold decoder at 1.57–1.62× its throughput (Section 4.4, Appendix H)."
    }
   }
  ]
@@ -606,7 +614,7 @@ dl.terms dd { margin: 0; color: var(--body); font-size: 15px; line-height: 1.6; 
   <h1 class="title">On the SPOT: Enhancing Speculative Decoding for Diffusion Language Models via <span class="nowrap">Commit-Order</span> Prediction</h1>
   <p class="dek">SPOT predicts where a diffusion language model commits next, so the model verifies several future steps in one pass, with its exact output distribution.</p>
   <ul class="value-points">
-    <li><span class="vp-label">Result</span><span>Up to 6.8× fewer model passes and 3.2× the throughput of standard decoding, ahead of every drafting baseline at T = 0 and T = 1.</span></li>
+    <li><span class="vp-label">Result</span><span>Up to 6.8× fewer model passes and 3.4× the throughput of standard decoding, ahead of every drafting baseline at T = 0 and T = 1.</span></li>
     <li><span class="vp-label">Why</span><span>The previous pass already has the right token at 92–100% of positions; SPOT predicts the order.</span></li>
     <li><span class="vp-label">Exact</span><span>Coupled-noise verification checks a whole draft tree in one pass, exact at any temperature.</span></li>
   </ul>
@@ -683,7 +691,7 @@ dl.terms dd { margin: 0; color: var(--body); font-size: 15px; line-height: 1.6; 
   <div class="stats">
     <div class="stat-card"><span class="tag">Order model</span><div class="stat-value">0.62M</div><p class="stat-desc">parameters, reading only the model's output distributions.</p></div>
     <div class="stat-card"><span class="tag">Model passes</span><div class="stat-value">up to 6.8× fewer</div><p class="stat-desc">forward passes than standard decoding on SDAR-8B.</p></div>
-    <div class="stat-card"><span class="tag">Throughput</span><div class="stat-value">up to 3.2×</div><p class="stat-desc">that of standard decoding, output unchanged.</p></div>
+    <div class="stat-card"><span class="tag">Throughput</span><div class="stat-value">up to 3.4×</div><p class="stat-desc">that of standard decoding, output unchanged.</p></div>
     <div class="stat-card"><span class="tag">Models</span><div class="stat-value">6 diffusion LMs</div><p class="stat-desc">with drafters that transfer across models.</p></div>
   </div>
 </section>
@@ -699,7 +707,7 @@ dl.terms dd { margin: 0; color: var(--body); font-size: 15px; line-height: 1.6; 
   <main class="article-body">
     <section class="text-block" id="results">
       <span class="tag is-outline">01 · Results</span>
-      <h2 class="headline">SPOT and SPOT-γ beat every drafting baseline on every task, at <span class="hl">2.0–3.1×</span> the throughput of standard decoding.</h2>
+      <h2 class="headline">SPOT beats every drafting baseline on every task, at <span class="hl">2.5–3.4×</span> the throughput of standard decoding.</h2>
       <p class="src">Sections 5.1 and 5.2 of the paper, with Appendix F.</p>
       <p>SDAR-8B, block 32, 256 tokens, budget 8, T = 0; three seeds, n = 350 prompts (HumanEval 164). All drafters share one decoder and verifier, so the comparison isolates drafting.</p>
       <div class="chart-card">
@@ -717,19 +725,36 @@ dl.terms dd { margin: 0; color: var(--body); font-size: 15px; line-height: 1.6; 
           </table>
         </div>
       </div>
-      <div class="callout"><span class="eyebrow">What you learn</span><p>A learned commit order beats every drafting baseline on every task: 15–35% fewer passes than Spiffy's calibrated graph, at 1.1–1.5× its throughput.</p></div>
+      <div class="callout"><span class="eyebrow">What you learn</span><p>A learned commit order beats every drafting baseline on every task: 16–36% fewer passes than Spiffy's calibrated graph, at 1.04–1.41× its throughput.</p></div>
       <div class="res-cards">
-        <div class="stat-card"><span class="tag">Sampling at T = 1</span><div class="stat-value">2.16–3.09×</div><p class="stat-desc">SPOT-γ throughput, with the sampling distribution kept exact.</p></div>
-        <div class="stat-card"><span class="tag">Longer outputs</span><div class="stat-value">3.23×</div><p class="stat-desc">SPOT-γ throughput on MBPP at T = 1 with 512 tokens, up from 2.86× at 256.</p></div>
-        <div class="stat-card"><span class="tag">Transfer</span><div class="stat-value">6 DLMs</div><p class="stat-desc">SDAR-8B, 4B and 1.7B, LLaDA2.0-mini, LLaDA-8B and Dream-7B. The LLaDA2.0-mini checkpoint needs 3–7% more passes on SDAR-8B and still beats every baseline.</p></div>
+        <div class="stat-card"><span class="tag">Sampling at T = 1</span><div class="stat-value">2.20–3.27×</div><p class="stat-desc">SPOT-γ throughput at budgets 8 and 20, with the sampling distribution kept exact.</p></div>
+        <div class="stat-card"><span class="tag">Threshold decoding</span><div class="stat-value">7.9×</div><p class="stat-desc">SPOT-Sets throughput on SDAR-8B at T = 0, mean of four tasks: 59% above the threshold decoder alone.</p></div>
+        <div class="stat-card"><span class="tag">Transfer</span><div class="stat-value">6 DLMs</div><p class="stat-desc">SDAR-8B, 4B and 1.7B, LLaDA2.0-mini, LLaDA-8B and Dream-7B. The LLaDA2.0-mini checkpoint needs 4–8% more passes on SDAR-8B and still beats every baseline.</p></div>
       </div>
+      <h3>SPOT-Sets: whole commit sets for threshold decoding.</h3>
+      <p>A faster decoder commits every position above a confidence bar (τ = 0.9), so one step is a set of positions. SPOT-Sets drafts these steps whole with a 5.1M-parameter set drafter, trained on general chat prompts only, and verifies them in one pass in the same way. On SDAR-8B at T = 0 it reaches 5.2–9.9× the throughput of standard decoding, 59% above the threshold decoder alone (Section 4.4 and Table 2).</p>
+      <div class="chart-card">
+        <div class="chart-title">Throughput over standard decoding, with threshold decoding</div>
+        <div class="chart-sub">SDAR-8B · block 32 · 256 tokens · budget 8 · T = 0 · mean of three seeds · target passes in brackets</div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>Method</th><th>GSM8K</th><th>MBPP</th><th>HumanEval</th><th>MATH500</th></tr></thead>
+            <tbody>
+              <tr><td>Threshold decoder, no drafts</td><td>4.51× (58.8)</td><td>5.89× (44.0)</td><td>6.13× (43.4)</td><td>3.34× (80.1)</td></tr>
+              <tr><td><b>SPOT-Sets-γ</b></td><td><b>7.30×</b> (30.6)</td><td><b>9.28×</b> (22.8)</td><td><b>9.85×</b> (22.7)</td><td><b>5.24×</b> (42.3)</td></tr>
+              <tr><td>SPOT-Sets-γ, exact</td><td>6.93× (32.5)</td><td>8.97× (23.8)</td><td>9.35× (24.0)</td><td>4.96× (45.1)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p>SPOT-Sets-γ accepts with max-commit, which can change the output; the exact variant keeps the threshold decoder's output.</p>
     </section>
 
     <section class="text-block" id="use">
       <span class="tag is-outline">02 · Use it</span>
       <h2 class="headline">Run SPOT with the <a class="hl" href="https://github.com/Eliezer318/SPOT-dLLM" target="_blank" rel="noopener">released code</a>, in your browser or on your own GPU.</h2>
       <p class="src">Code, drafters and a Colab notebook, by the authors.</p>
-      <p>The repository holds the decoder, the coupled-noise verifier and six trained drafters, also on Hugging Face. The Colab notebook runs SDAR-1.7B with its drafter on a free GPU.</p>
+      <p>The repository holds the decoder, the coupled-noise verifier and six trained drafters, also on Hugging Face, where the SPOT-Sets drafter is too. The Colab notebook runs SDAR-1.7B with its drafter on a free GPU.</p>
       <div class="btn-row">
         <a class="btn-pill is-primary" href="https://colab.research.google.com/github/Eliezer318/SPOT-dLLM/blob/main/colab/spot_quickstart.ipynb" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m10 8.5 5 3.5-5 3.5z"/></svg>Open the Colab notebook</a>
         <a class="btn-pill" href="https://github.com/Eliezer318/SPOT-dLLM" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub: SPOT-dLLM</a>
@@ -760,7 +785,14 @@ huggingface-cli download EliezerS/SPOT-dLLM --local-dir drafters
   --task mbpp --limit 100 --temperature 0.0 --verify match \
   --layout concat --cache on --unmasking single --suffix skip --pad-pieces -1 \
   --draft slot --slot-mode ddtree_b --slot-ckpt drafters/sdar8b_b32.pt --slot-tokgate 0.6 \
-  --budgets 0,8,20 --seeds 0 --out-root runs/sdar8b/mbpp/spot</pre>
+  --budgets 0,8,20 --seeds 0 --out-root runs/sdar8b/mbpp/spot
+
+<span class="c"># 4. SPOT-Sets on threshold decoding (drafter fetched from Hugging Face)</span>
+<span class="k">python</span> run_sweep.py --model sdar --block-length 32 --gen-length 256 \
+  --task mbpp --limit 100 --temperature 0.0 \
+  --layout concat --cache on --unmasking threshold --threshold 0.9 \
+  --draft sets --sets-accept product --cross-block on \
+  --budgets 0,8 --seeds 0 --out-root runs/sdar8b/mbpp/sets</pre>
           <div class="chips" role="group" aria-label="Supported targets">
             <span class="chip" title="native drafter"><i></i>SDAR-8B</span>
             <span class="chip" title="native drafter"><i></i>SDAR-4B</span>
@@ -797,13 +829,13 @@ huggingface-cli download EliezerS/SPOT-dLLM --local-dir drafters
       <h2 class="headline">What makes the drafter work, and where its <span class="hl">limits</span> are.</h2>
       <p class="src">Sections 3, 5.3–5.5 and 6 of the paper, with Appendices A and F.</p>
       <h3>Positions are worth more than tokens.</h3>
-      <p>Oracle runs show the headroom: on GSM8K, true positions alone cut passes by 5.4× to 7.1× as the budget grows from 8 to 20, while true tokens alone give 3.3–6.5× at budget 20. SPOT predicts the next commit with 75% held-out accuracy (22% for the stale-confidence order) and recovers 70–85% of the position oracle's reduction.</p>
+      <p>Oracle runs show the headroom: on GSM8K, true positions alone cut passes by 5.4× to 7.2× as the budget grows from 8 to 20, while true tokens alone give 3.4–6.5× at budget 20. SPOT predicts the next commit with 75% held-out accuracy (22% for the stale-confidence order) and recovers 70–85% of the position oracle's reduction.</p>
       <h3>Exact at any temperature.</h3>
-      <p>SPOT shares per-position Gumbel noise between the drafter and the model. Given the noise, the next step is deterministic, so a whole tree is checked by equality and the sampling distribution stays exact. At T = 1, SPOT uses 15–34% fewer passes than Spiffy at 1.15–1.48× its throughput.</p>
+      <p>SPOT shares per-position Gumbel noise between the drafter and the model. Given the noise, the next step is deterministic, so a whole tree is checked by equality and the sampling distribution stays exact. At T = 1, SPOT uses 16–35% fewer passes than Spiffy at 1.08–1.37× its throughput.</p>
       <h3>Branching beats a longer chain.</h3>
-      <p>A chain in place of the tree is the largest loss in the ablation: on MBPP, 7.3 more passes at budget 8 and 11.9 at budget 20, with throughput at budget 20 falling from 1.72× to 1.34×.</p>
+      <p>A chain in place of the tree is the largest loss in the ablation: on MBPP, 7.0 more passes at budget 8 and 11.7 at budget 20, with throughput at budget 8 falling from 3.65× to 3.34×.</p>
       <h3>One checkpoint, six models.</h3>
-      <p>Swapped checkpoints, tokenizers included: the LLaDA2.0-mini checkpoint needs 3–7% more passes on SDAR-8B and still beats every baseline. On LLaDA-8B and Dream-7B, new to every checkpoint, SPOT cuts 256 passes to 55–88 and 51–79; both use an approximate prefix cache, so these rows show reach, and exactness is shown on the other four models.</p>
+      <p>Swapped checkpoints, tokenizers included: the LLaDA2.0-mini checkpoint needs 4–8% more passes on SDAR-8B and still beats every baseline. On LLaDA-8B and Dream-7B, new to every checkpoint, SPOT cuts 256 passes to 55–88 and 51–80; both use an approximate prefix cache, so these rows show reach, and exactness is shown on the other four models.</p>
       <h3>Where the gains shrink.</h3>
       <p>Gains shrink when verification is costly or acceptance is low: at wide blocks, on low-acceptance tasks, and at T ≥ 2, where noise-aware ranking beats the order model trained at T = 0. Exact tree packing under bidirectional attention remains open.</p>
       <div class="btn-row"><a class="btn-pill" href="https://arxiv.org/abs/2610.22543" target="_blank" rel="noopener">Read the paper</a></div>
@@ -812,7 +844,7 @@ huggingface-cli download EliezerS/SPOT-dLLM --local-dir drafters
     <section class="text-block" id="questions">
       <span class="tag is-outline">05 · Questions</span>
       <h2 class="headline">Terms, common questions and <span class="hl">released resources</span>.</h2>
-      <p class="src">Condensed from Appendix H of the paper.</p>
+      <p class="src">Condensed from Appendix I of the paper.</p>
       <div class="chart-card">
         <div class="chart-title">Terms</div>
         <dl class="terms">
@@ -821,7 +853,8 @@ huggingface-cli download EliezerS/SPOT-dLLM --local-dir drafters
           <dt>Draft tree</dt><dd>Candidate block states grown best first from the drafter, up to a budget of D states verified in one batched forward (Section 4.2).</dd>
           <dt>Coupled-noise match</dt><dd>Verification at T &gt; 0 with the drafter and the model sharing Gumbel noise, so checking reduces to state equality (Section 4.3).</dd>
           <dt>SPOT (Speculating Positions Order Trajectory)</dt><dd>The method: a 0.62M-parameter, three-layer order model predicts the next committed position, the predictions grow a draft tree, and the model verifies the tree exactly (Section 4).</dd>
-          <dt>SPOT-γ</dt><dd>SPOT unpadded with a prefix-mass floor γ, so the verification budget adapts to drafter confidence; γ = 0.1 on SDAR-8B (Section 4.2, Appendix D.5).</dd>
+          <dt>SPOT-γ</dt><dd>SPOT unpadded with a prefix-mass floor γ, so the verification budget adapts to drafter confidence; calibrated per target, γ = 0.02 on the SDAR targets (Section 4.2, Appendix D.5).</dd>
+          <dt>SPOT-Sets</dt><dd>SPOT's idea carried to dynamic threshold decoding: a 5.1M-parameter set drafter drafts whole steps, each a set of positions with their tokens, and the model verifies them in one pass (Section 4.4).</dd>
           <dt>NFE and throughput ratio</dt><dd>Target forward passes per sample, and throughput relative to the draft-free run of the same task, model and temperature (Section 5.1).</dd>
         </dl>
       </div>
@@ -834,13 +867,15 @@ huggingface-cli download EliezerS/SPOT-dLLM --local-dir drafters
       <h3>Is the output exact when the model samples?</h3>
       <p>Yes, with an exact prefix cache. At T = 0 verification reproduces the draft-free trajectory for any drafter (Proposition 1); at T &gt; 0 shared Gumbel noise gives the same distribution as draft-free decoding (Proposition 2). Draft quality affects speed alone (Section 4.3).</p>
       <h3>How does SPOT differ from Spiffy, SSD and BlockSpec?</h3>
-      <p>They draft from a calibrated static graph, a confidence-ordered chain or a confidence tree; SPOT learns the commit order. Under one decoder and verifier it uses 15–35% fewer forwards than Spiffy at 1.1–1.5× its throughput on SDAR-8B (Section 5.2).</p>
+      <p>They draft from a calibrated static graph, a confidence-ordered chain or a confidence tree; SPOT learns the commit order. Under one decoder and verifier it uses 16–36% fewer forwards than Spiffy at 1.04–1.41× its throughput on SDAR-8B, in every task and budget (Section 5.2).</p>
       <h3>Which models and benchmarks does the paper use?</h3>
       <p>SDAR-8B (block 32) as the headline target, plus SDAR-4B, SDAR-1.7B and LLaDA2.0-mini, with transfer to LLaDA-8B and Dream-7B. Benchmarks: GSM8K, MBPP, HumanEval and MATH500; n = 350 (HumanEval 164), three seeds, 256 tokens (Section 5.1).</p>
       <h3>What are the main results?</h3>
-      <p>On SDAR-8B, 3.2–4.7× fewer forwards than draft-free decoding at budget 8 (4.1–6.8× at budget 20) and 2.0–2.7× the throughput at budget 8; SPOT-γ reaches 3.23× on MBPP at T = 1 with 512 tokens. On SDAR-1.7B, where a forward is cheap, Spiffy leads three throughput columns at T = 0 and two at T = 1, with one tie (Sections 5.2–5.4).</p>
+      <p>On SDAR-8B, 3.2–4.7× fewer forwards than draft-free decoding at budget 8 (4.1–6.8× at budget 20) and 2.5–3.4× the throughput at budget 8; at T = 1, 16–35% fewer forwards than Spiffy at 1.08–1.37× its throughput. On top of dynamic threshold decoding, SPOT-Sets reaches 5.2–9.9× the throughput of standard decoding (7.9× on average), against 3.3–6.1× (5.0×) for the threshold decoder alone. SPOT beats or matches every baseline in every setting at both temperatures (Sections 5.2–5.4).</p>
       <h3>Does SPOT work beyond SDAR-8B?</h3>
-      <p>Yes, across six DLMs: the lowest NFE and highest throughput in every SDAR-4B comparison, and on LLaDA2.0-mini (a different tokenizer) the lowest NFE in all 36 comparisons and the higher throughput in 34. Transferred checkpoints also drive LLaDA-8B and Dream-7B (Section 5.4).</p>
+      <p>Yes, across six DLMs: the lowest NFE and highest throughput in every SDAR-4B comparison, and on SDAR-1.7B and LLaDA2.0-mini (a different tokenizer) the lowest NFE in every comparison, beating or matching every baseline in throughput. Transferred checkpoints also drive LLaDA-8B and Dream-7B (Section 5.4).</p>
+      <h3>What does SPOT-Sets add, and is it exact?</h3>
+      <p>Faster decoders commit every position whose confidence clears a bar τ, so a drafted step is a whole set of positions with a token for each. SPOT-Sets drafts these sets from the stale distributions, the hidden state and the candidate tokens, and grows a tree whose nodes are whole steps. With exact acceptance the output is the threshold decoder's own, up to floating-point batch effects; max-commit with the product rule commits more per forward and changes the output. On SDAR-8B at T = 0 and budget 8, SPOT-Sets-γ takes 47–48% fewer forwards than the threshold decoder at 1.57–1.62× its throughput (Section 4.4, Appendix H).</p>
       <h3>Where this work sits</h3>
       <p>SPOT brings speculative decoding to block-diffusion language models. It compares against self-drafting, draft-graph and confidence-tree speculation for DLMs (Gao et al., 2025; Agrawal et al., 2026; Pan et al., 2025), and verifies with Gumbel coupling (Daliri et al., 2025).</p>
     </section>
@@ -1077,20 +1112,20 @@ huggingface-cli download EliezerS/SPOT-dLLM --local-dir drafters
   /* results chart: throughput ratio at D8, T = 0 (paper, main table) */
   var TASKS = ["GSM8K", "MBPP", "HumanEval", "MATH500"];
   var METHODS = [
-    { name: "SPOT-γ", c: "var(--spotg)", v: [2.76, 2.98, 3.09, 2.27], nfe: [75.1, 60.7, 66.5, 92.2], ours: true },
-    { name: "SPOT", c: "var(--spot)", v: [2.50, 2.61, 2.74, 2.03], nfe: [69.6, 56.7, 62.2, 84.5], ours: true },
-    { name: "Spiffy graph", c: "var(--spiffy)", v: [1.96, 1.86, 2.11, 1.80], nfe: [91.3, 83.4, 86.8, 99.4] },
-    { name: "SSD free chain", c: "var(--chain)", v: [1.95, 1.80, 2.08, 1.80], nfe: [92.2, 84.7, 87.0, 100.5] },
-    { name: "BlockSpec tree", c: "var(--blockspec)", v: [1.33, 1.10, 1.34, 1.29], nfe: [136.4, 135.0, 136.0, 136.7] }
+    { name: "SPOT-γ", c: "var(--spotg)", v: [3.03, 3.48, 3.42, 2.53], nfe: [70.1, 56.9, 62.6, 84.7], ours: true },
+    { name: "SPOT", c: "var(--spot)", v: [2.95, 3.38, 3.35, 2.50], nfe: [70.1, 56.7, 62.5, 84.6], ours: true },
+    { name: "Spiffy graph", c: "var(--spiffy)", v: [2.48, 2.40, 2.64, 2.29], nfe: [92.5, 83.6, 87.6, 100.6] },
+    { name: "SSD free chain", c: "var(--chain)", v: [2.44, 2.39, 2.63, 2.28], nfe: [92.4, 84.5, 87.0, 100.6] },
+    { name: "BlockSpec tree", c: "var(--blockspec)", v: [1.64, 1.46, 1.65, 1.64], nfe: [136.5, 135.1, 136.0, 136.8] }
   ];
   var FREE_NFE = [270.8, 269.2, 271.4, 271.8];
   var svg = document.getElementById("chart"), NS = "http://www.w3.org/2000/svg";
   var W = 860, left = 128, right = 40, barH = 13, gapB = 3, groupGap = 22, top = 34;
   var groupH = METHODS.length * (barH + gapB) - gapB;
   var H = top + TASKS.length * (groupH + groupGap) + 18;
-  var xmax = 3.5, x = function (v) { return left + (W - left - right) * v / xmax; };
+  var xmax = 4, x = function (v) { return left + (W - left - right) * v / xmax; };
   function s(tag, attrs, txt) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (txt != null) e.textContent = txt; svg.appendChild(e); return e; }
-  [0, 1, 2, 3].forEach(function (v) {
+  [0, 1, 2, 3, 4].forEach(function (v) {
     s("line", { x1: x(v), x2: x(v), y1: top - 8, y2: H - 18, "class": v === 1 ? "base" : "gridline" });
     s("text", { x: x(v), y: top - 14, "text-anchor": "middle" }, v === 1 ? "1× draft-free" : v + "×");
   });

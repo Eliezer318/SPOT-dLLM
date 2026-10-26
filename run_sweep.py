@@ -24,6 +24,7 @@ from spot.drafters import (  # noqa: E402
 from spot.graphs import DraftGraph  # noqa: E402
 from spot.models import load_adapter  # noqa: E402
 from spot.runner import provenance  # noqa: E402
+from spot.sets import SetsConfig, SetTreeDrafter, generate_sets, load_set_drafter  # noqa: E402
 from spot.tasks import load_task, score_task  # noqa: E402
 
 
@@ -73,8 +74,8 @@ def main():
     ap.add_argument("--unmasking", default="single", choices=["single", "threshold"])
     ap.add_argument("--threshold", type=float, default=0.9,
                     help="confidence bar for --unmasking threshold (commit every position above it)")
-    ap.add_argument("--draft", default="slot", choices=["spiffy","free","slot","sibling"],
-                    help="draft-graph source for budget>0 arms")
+    ap.add_argument("--draft", default="slot", choices=["spiffy","free","slot","sibling","sets"],
+                    help="draft-graph source for budget>0 arms (sets = SPOT-Sets, threshold decoding)")
     ap.add_argument("--free-vocab-ranks", type=int, default=3)
     ap.add_argument("--free-max-depth", type=int, default=6)
     ap.add_argument("--free-skip", type=int, default=1)
@@ -107,6 +108,11 @@ def main():
                          "honest unpadded deployment baseline.")
     ap.add_argument("--slot-ckpt", default="drafters/sdar8b_b32.pt")
     ap.add_argument("--slot-mode", default="ddtree_b", choices=["chain", "bestfirst", "graph", "ddtree", "ddtree_b", "ddtree_bf", "pl", "purechain", "conftree"])
+    ap.add_argument("--sets-ckpt", default="drafters/sets/sdar8b_b32.pt",
+                    help="SPOT-Sets drafter (fetched from Hugging Face when not found locally)")
+    ap.add_argument("--sets-gamma", type=float, default=0.02, help="SPOT-Sets mass floor")
+    ap.add_argument("--sets-accept", default="product", choices=["exact", "product", "cut", "subset"],
+                    help="SPOT-Sets acceptance: exact state equality, or max-commit under this rule")
     ap.add_argument("--out-root", required=True)
     args = ap.parse_args()
     _check_graph_matches_model(args.graph, args.model, args.draft)
@@ -124,6 +130,10 @@ def main():
         drafter = SlotDrafter(args.slot_ckpt, ad)
         print(f"== slot picker: m_top={drafter.m_top}, k_steps={drafter.k_steps}, "
               f"trained block={drafter.trained_block}, val_joint={drafter.val_joint}")
+    elif args.draft == "sets":
+        if (args.unmasking, args.cache, args.layout) != ("threshold", "on", "concat"):
+            raise SystemExit("--draft sets: run with --unmasking threshold --cache on --layout concat")
+        drafter = load_set_drafter(args.sets_ckpt, device=ad.device)
     elif args.draft == "sibling":
         # SimSD-core -- the 1.7B sibling drafts its own chain, we verify exactly
         # --aux-device cuda:1 = SimSD's own deployment shape (sibling on its own GPU);
@@ -154,7 +164,7 @@ def main():
             os.makedirs(out_dir, exist_ok=True)
             cfg = DecodeConfig(
                 cache=args.cache, unmasking=args.unmasking, threshold=args.threshold,
-                draft=(args.draft if budget > 0 else "none"),
+                draft=(args.draft if budget > 0 and args.draft != "sets" else "none"),
                 draft_free_vocab_ranks=args.free_vocab_ranks,
                 draft_free_max_depth=args.free_max_depth,
                 draft_free_skip=args.free_skip,
@@ -170,8 +180,17 @@ def main():
             )
             preserving, why = cfg.is_distribution_preserving(
                 getattr(ad, "block_causal", False))
+            sets_cfg = None
+            if args.draft == "sets":
+                sets_cfg = SetsConfig(gen_length=args.gen_length, block_length=args.block_length, threshold=args.threshold,
+                                      temperature=args.temperature, seed=seed, acceptance=args.sets_accept,
+                                      cross_block=args.cross_block == "on", draft_refresh=args.cross_block == "on")
+                sets_drafter = SetTreeDrafter(drafter, budget=budget, gamma=args.sets_gamma) if budget > 0 else None
+                if budget > 0 and args.sets_accept != "exact":
+                    preserving, why = False, why + ["max-commit accepts states the threshold rule would not reach"]
             with open(os.path.join(out_dir, "config.json"), "w") as f:
                 json.dump({"budget": budget, "seed": seed, "decode": dict(cfg.__dict__),
+                           **({"sets": dict(sets_cfg.__dict__), "sets_gamma": args.sets_gamma} if sets_cfg else {}),
                            "distribution_preserving": preserving, "reasons_not": why,
                            "provenance": provenance(args.graph)}, f, indent=2)
 
@@ -182,8 +201,11 @@ def main():
             t0 = time.time()
             for s in samples:
                 prompt = ad.encode_raw(s.raw_prompt) if s.raw_prompt else ad.encode_prompt(s.messages)
-                r = generate(ad, prompt, cfg, graph=(graph if budget > 0 else None),
-                             sample_id=s.sample_id, drafter=drafter, aux=aux)
+                if sets_cfg is not None:
+                    r = generate_sets(ad, prompt, sets_cfg, drafter=sets_drafter, sample_id=s.sample_id)
+                else:
+                    r = generate(ad, prompt, cfg, graph=(graph if budget > 0 else None),
+                                 sample_id=s.sample_id, drafter=drafter, aux=aux)
                 for rec in r["rounds"]:
                     rf.write(json.dumps(rec) + "\n")
                 sc = score_task(args.task, s, r["text"])

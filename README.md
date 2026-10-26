@@ -34,11 +34,14 @@ The <a href="https://eliezer318.github.io/SPOT-dLLM/">project page</a> has an in
 
 > **TL;DR.** SPOT speeds up diffusion language models losslessly. A 0.62M-parameter drafter predicts the order
 > in which the model commits positions, and the model verifies a whole tree of drafts in one pass, exactly at any
-> temperature. It cuts target passes by up to 6.8×, reaches up to 3.2× the throughput of standard decoding, and
-> its drafters transfer across six diffusion LMs.
+> temperature. It cuts target passes by up to 6.8×, reaches up to 3.4× the throughput of standard decoding, and
+> its drafters transfer across six diffusion LMs. **SPOT-Sets** carries the idea to dynamic threshold decoding:
+> it drafts whole commit sets and raises SDAR-8B's throughput by 59% over the threshold decoder alone.
 
 ## 📰 News
 
+- **2026-10** · Paper v2 adds **SPOT-Sets** for dynamic threshold decoding: code in `spot/sets.py`, its SDAR-8B
+  drafter on [🤗 SPOT-dLLM](https://huggingface.co/EliezerS/SPOT-dLLM) (`sets/sdar8b_b32.pt`).
 - **2026-10** · Code, the drafter checkpoints ([🤗 SPOT-dLLM](https://huggingface.co/EliezerS/SPOT-dLLM)) and the
   [project page](https://eliezer318.github.io/SPOT-dLLM/) are being prepared for release.
 
@@ -58,23 +61,39 @@ The <a href="https://eliezer318.github.io/SPOT-dLLM/">project page</a> has an in
 
 SDAR-8B (block 32), 256 generated tokens, draft budget 8, T = 0. Throughput relative to the draft-free
 one-token-per-step control of the same target (target forwards per sample in brackets). All methods are exact,
-so accuracy is the target's own (GSM8K 0.89–0.90, MBPP 0.41–0.43, HumanEval 0.74, MATH500 0.11).
+so accuracy is the target's own (GSM8K 0.89–0.90, MBPP 0.43, HumanEval 0.71–0.74, MATH500 0.10–0.12).
 
 | Method | GSM8K | MBPP | HumanEval | MATH500 |
 |---|---|---|---|---|
 | Draft-free | 1.00× (270.8) | 1.00× (269.2) | 1.00× (271.4) | 1.00× (271.8) |
-| **SPOT** | 2.50× (**69.6**) | 2.61× (**56.7**) | 2.74× (**62.2**) | 2.03× (**84.5**) |
-| **SPOT-γ** (score floor 0.1) | **2.76×** (75.1) | **2.98×** (60.7) | **3.09×** (66.5) | **2.27×** (92.2) |
-| Spiffy graph | 1.96× (91.3) | 1.86× (83.4) | 2.11× (86.8) | 1.80× (99.4) |
-| SSD free chain | 1.95× (92.2) | 1.80× (84.7) | 2.08× (87.0) | 1.80× (100.5) |
-| BlockSpec tree | 1.33× (136.4) | 1.10× (135.0) | 1.34× (136.0) | 1.29× (136.7) |
+| **SPOT** | 2.95× (**70.1**) | 3.38× (**56.7**) | 3.35× (**62.5**) | 2.50× (**84.6**) |
+| **SPOT-γ** (mass floor 0.02) | **3.03×** (70.1) | **3.48×** (56.9) | **3.42×** (62.6) | **2.53×** (84.7) |
+| Spiffy graph | 2.48× (92.5) | 2.40× (83.6) | 2.64× (87.6) | 2.29× (100.6) |
+| SSD free chain | 2.44× (92.4) | 2.39× (84.5) | 2.63× (87.0) | 2.28× (100.6) |
+| BlockSpec tree | 1.64× (136.5) | 1.46× (135.1) | 1.65× (136.0) | 1.64× (136.8) |
 
-n = 350 prompts per task (HumanEval 164), three seeds, one job per NVIDIA RTX 6000 Ada card.
+n = 350 prompts per task (HumanEval 164), mean of three seeds, one job per NVIDIA RTX PRO 6000 Blackwell card
+(Table 2 of the paper).
 
-- **Sampling (T = 1).** With coupled-noise match, SPOT-γ keeps 2.16–3.09× while preserving the target's sampling
-  distribution.
+- **Sampling (T = 1).** With coupled-noise match, SPOT-γ keeps 2.20–3.27× at budgets 8 and 20 while preserving the
+  target's sampling distribution; SPOT takes 16–35% fewer forwards than Spiffy at 1.08–1.37× its throughput.
 - **Transfer.** SDAR-8B, 4B and 1.7B, LLaDA2.0-mini, LLaDA-8B and Dream-7B, each driven by a drafter trained on
   another model.
+
+**SPOT-Sets (threshold decoding, τ = 0.9).** A faster decoder commits every position above a confidence bar, so a
+step is a set of positions. SPOT-Sets drafts these steps whole, with a 5.1M-parameter set drafter trained on general
+chat prompts only (ShareGPT and UltraChat-200K). SDAR-8B, block 32, 256 tokens, budget 8, T = 0, mean of three
+seeds; throughput over draft-free one-commit decoding (target forwards per sample in brackets; Table 2 of the
+paper).
+
+| Method | GSM8K | MBPP | HumanEval | MATH500 |
+|---|---|---|---|---|
+| Threshold decoder, no drafts | 4.51× (58.8) | 5.89× (44.0) | 6.13× (43.4) | 3.34× (80.1) |
+| **SPOT-Sets-γ** | **7.30×** (**30.6**) | **9.28×** (**22.8**) | **9.85×** (**22.7**) | **5.24×** (**42.3**) |
+| SPOT-Sets-γ, exact | 6.93× (32.5) | 8.97× (23.8) | 9.35× (24.0) | 4.96× (45.1) |
+
+SPOT-Sets-γ accepts with max-commit (the product rule), which can change the output; the exact variant keeps the
+threshold decoder's output.
 
 ## 🚀 Quick start
 
@@ -119,11 +138,27 @@ Arms are selected with `--draft`:
 | `--draft spiffy --graph graphs/sdar8b_b32_D24.json` | Spiffy baseline: calibrated static draft graph |
 | `--draft free --free-vocab-ranks 1 --free-order sampler --free-max-depth 4` | confidence-ordered free chain |
 | `--budgets 0` (no `--draft`) | draft-free control |
+| `--draft sets --unmasking threshold` | SPOT-Sets: drafted commit sets for threshold decoding (below) |
 
 `--verify match` is state equality, coupled to the target's sampler at `T>0`;
 `--verify rs` is the rejection-sampling verifier, defined for chains only.
 
 `--unmasking single` commits one position per forward, the exact regime of the paper's results.
+
+**SPOT-Sets** runs on threshold decoding; its drafter is fetched from Hugging Face on first use. Budget 0 is the
+threshold decoder without drafts:
+
+```
+python run_sweep.py --model sdar --block-length 32 --gen-length 256 \
+  --task mbpp --limit 100 --temperature 0.0 \
+  --layout concat --cache on --unmasking threshold --threshold 0.9 \
+  --draft sets --sets-accept product --cross-block on \
+  --budgets 0,8 --seeds 0 --out-root runs/sdar8b/mbpp/sets
+```
+
+`--sets-accept exact` keeps the threshold decoder's output; `product`, `subset` and `cut` are the max-commit rules,
+from loosest to strictest. `--cross-block on` lets a draft that completes the block carry the next one, and the
+next block's first forward verify drafts too.
 
 <a id="drafter-checkpoints"></a>
 
@@ -155,6 +190,10 @@ tuned separately for one target and width, same architecture): `sdar8b_b32`,
 
 The SDAR-4B, SDAR-1.7B and SDAR-8B-b16 targets are read from the local snapshot cache;
 download them first, e.g. `huggingface-cli download JetLM/SDAR-4B-Chat-b32`.
+
+The SPOT-Sets drafter, `sets/sdar8b_b32.pt` (SDAR-8B-Chat-b32, threshold 0.9), is on Hugging Face only and is
+fetched on first use: the set drafter's weights together with the target's token-embedding PCA and hidden-state
+basis it reads.
 
 The same checkpoints, with a model card, are on Hugging Face at [🤗 EliezerS/SPOT-dLLM](https://huggingface.co/EliezerS/SPOT-dLLM):
 
@@ -235,6 +274,7 @@ draft-free run.
 | `train_slotpicker.py` | Train the commit-order model |
 | `spot/decode.py` | Block-diffusion decoding loop and verification |
 | `spot/drafters.py` | Draft-tree construction, including the level-batched search |
+| `spot/sets.py` | SPOT-Sets: set drafter, step tree, max-commit and the threshold-decoding loop |
 | `spot/pickers.py`, `spot/slotpicker.py` | Order-model architectures and stale-distribution features |
 | `spot/sampling.py` | Coupled-noise sampling and commit laws |
 | `spot/models.py`, `spot/tasks.py` | Target adapters; benchmark loading and scoring |
