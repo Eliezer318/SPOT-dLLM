@@ -15,7 +15,7 @@
 
 <sub><sup>\*</sup>Equal contribution. Correspondence: eliezershlomi0x@gmail.com, elironrahimi@campus.technion.ac.il</sub>
 
-[![Project page](https://img.shields.io/badge/Project-page-1D4ED8)](https://eliezer318.github.io/SPOT-dLLM/)
+[![Project page](https://img.shields.io/badge/Project-page-1D4ED8)](https://eliezershlomi.com/SPOT-dLLM/)
 [![arXiv](https://img.shields.io/badge/arXiv-2610.22543-B31B1B)](https://arxiv.org/abs/2610.22543)
 [![Drafters](https://img.shields.io/badge/%F0%9F%A4%97%20Drafters-SPOT--dLLM-FFD21E)](https://huggingface.co/EliezerS/SPOT-dLLM)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Eliezer318/SPOT-dLLM/blob/main/colab/spot_quickstart.ipynb)
@@ -30,7 +30,7 @@
 </p>
 <p align="center"><sub>Recorded SDAR-8B runs on one GSM8K prompt (T = 0, block 32, budget 8), replayed at 2× the measured
 wall-clock time. All four arms write the identical 256 tokens; bright cells were written from an accepted draft.
-The <a href="https://eliezer318.github.io/SPOT-dLLM/">project page</a> has an interactive version.</sub></p>
+The <a href="https://eliezershlomi.com/SPOT-dLLM/">project page</a> has an interactive version.</sub></p>
 
 > **TL;DR.** SPOT speeds up diffusion language models losslessly. A 0.62M-parameter drafter predicts the order
 > in which the model commits positions, and the model verifies a whole tree of drafts in one pass, exactly at any
@@ -43,7 +43,7 @@ The <a href="https://eliezer318.github.io/SPOT-dLLM/">project page</a> has an in
 - **2026-10** · Paper v2 adds **SPOT-Sets** for dynamic threshold decoding: code in `spot/sets.py`, its drafters
   for SDAR-8B, SDAR-4B, LLaDA2.0-mini, LLaDA-8B and Dream-7B on [🤗 SPOT-dLLM](https://huggingface.co/EliezerS/SPOT-dLLM) (`sets/`).
 - **2026-10** · Code, the drafter checkpoints ([🤗 SPOT-dLLM](https://huggingface.co/EliezerS/SPOT-dLLM)) and the
-  [project page](https://eliezer318.github.io/SPOT-dLLM/) are being prepared for release.
+  [project page](https://eliezershlomi.com/SPOT-dLLM/) are being prepared for release.
 
 ## ✨ Highlights
 
