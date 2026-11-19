@@ -19,7 +19,7 @@ authors:
 abstract: "SPOT predicts where a diffusion language model commits next. A 0.62M-parameter drafter learns that commit order, and the model verifies a whole tree of drafts in one pass, keeping its exact output distribution."
 repository-code: "https://github.com/Eliezer318/SPOT-dLLM"
 repository-artifact: "https://huggingface.co/EliezerS/SPOT-dLLM"
-url: "https://eliezer318.github.io/SPOT-dLLM/"
+url: "https://eliezershlomi.com/SPOT-dLLM/"
 keywords:
   - "speculative decoding"
   - "diffusion language models"
