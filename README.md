@@ -13,7 +13,7 @@
 <sup>1</sup>Technion – Israel Institute of Technology<br>
 <sup>2</sup>INSIGHT Lab, School of Electrical and Computer Engineering, Ben-Gurion University of the Negev
 
-<sub><sup>\*</sup>Equal contribution. Correspondence: {eliezer, elironrahimi}@campus.technion.ac.il</sub>
+<sub><sup>\*</sup>Equal contribution. Correspondence: eliezershlomi0x@gmail.com, elironrahimi@campus.technion.ac.il</sub>
 
 [![Project page](https://img.shields.io/badge/Project-page-1D4ED8)](https://eliezer318.github.io/SPOT-dLLM/)
 [![arXiv](https://img.shields.io/badge/arXiv-2610.22543-B31B1B)](https://arxiv.org/abs/2610.22543)
