@@ -24,7 +24,7 @@ Eliezer Shlomi<sup>1,2\*</sup>, Eliron Rahimi<sup>1,2\*</sup>, Avi Mendelson<sup
 
 <sub><sup>\*</sup>Equal contribution. Correspondence: {eliezer, elironrahimi}@campus.technion.ac.il</sub>
 
-[![Project page](https://img.shields.io/badge/Project-page-1D4ED8)](https://eliezer318.github.io/SPOT-dLLM/)
+[![Project page](https://img.shields.io/badge/Project-page-1D4ED8)](https://eliezershlomi.com/SPOT-dLLM/)
 [![arXiv](https://img.shields.io/badge/arXiv-2610.22543-B31B1B)](https://arxiv.org/abs/2610.22543)
 [![Code](https://img.shields.io/badge/GitHub-SPOT--dLLM-181717?logo=github)](https://github.com/Eliezer318/SPOT-dLLM)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Eliezer318/SPOT-dLLM/blob/main/colab/spot_quickstart.ipynb)
